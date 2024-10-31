@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" href="./header.css" />
+    <title>Roata</title>
+    <style>
+      @font-face {
+        font-family: "montSuperBold";
+        src: url("./fonts/MontserratZ-Bold.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "montExtraBold";
+        src: url("./fonts/MontserratZ-ExtraBold.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "montBold";
+        src: url("./fonts/MontserratZ-Bold.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "montSemiBold";
+        src: url("./fonts/MontserratZ-SemiBold.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "montMedium";
+        src: url("./fonts/MontserratZ-Medium.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "montRegular";
+        src: url("./fonts/MontserratZ-Regular.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "montLight";
+        src: url("./fonts/MontserratZ-Light.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "montExtraLight";
+        src: url("./fonts/MontserratZ-ExtraLight.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "montThin";
+        src: url("./fonts/MontserratZ-Thin.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+    </style>
+  </head>
+  <body class="body">
+    <div id="splashScreen">
+      <div class="spinner"></div>
+      <p>Se incarcă...</p>
+    </div>
+
+    <div class="elemAssets">
+      <div class="div _seven">
+        <img src="./png/elements/seven.webp" alt="seven" />
+      </div>
+      <div class="div _crown">
+        <img src="./png/elements/crown.webp" alt="crown" />
+      </div>
+      <div class="div">
+        <img src="./png/elements/star-cherries.webp" alt="cherries" />
+      </div>
+      <div class="div _dollar">
+        <img src="./png/elements/dollar.webp" alt="dollar" />
+      </div>
+    </div>
+    <div class="hero">
+      <header id="headerId"></header>
+      <div class="wrapp-all">
+        <div class="appendDivs" id="appendDivs">
+          <div id="loadingStatus" class="loading-spinner"></div>
+          <div class="wrapperBox _hR">
+            <div class="cave">
+              <img src="./png/elements/arch2.webp" alt="" class="caveImg" />
+            </div>
+            <div class="mainbox" id="mainbox">
+              <div class="borderCave">
+                <div class="borderFrame"></div>
+              </div>
+              <div class="_boxContainer" id="__box">
+                <div class="_box1">
+                  <span class="clipPath span1"></span>
+                </div>
+                <div class="_box2">
+                  <span class="clipPath span2"></span>
+                </div>
+                <div class="_box3">
+                  <span class="clipPath span3"></span>
+                </div>
+                <div class="_box4">
+                  <span class="clipPath span4"></span>
+                </div>
+                <div class="_box5">
+                  <span class="clipPath span5"></span>
+                </div>
+                <div class="_box6">
+                  <span class="clipPath span6"></span>
+                </div>
+                <div class="_box7">
+                  <span class="clipPath span7"></span>
+                </div>
+                <div class="_box8">
+                  <span class="clipPath span8"></span>
+                </div>
+                <div class="_box9">
+                  <span class="clipPath span9"></span>
+                </div>
+                <div class="_box10">
+                  <span class="clipPath span10"></span>
+                </div>
+              </div>
+              <div class="_shadow_wheel">
+                <img src="./png/wheel/shadow.webp" alt="shadow" />
+              </div>
+              <button class="spin" onclick="spin()"></button>
+              <div class="_pin">
+                <img src="./png/wheel/pin.webp" alt="ping" class="pinImg" />
+              </div>
+            </div>
+          </div>
+          <div class="_front_text _hH">
+            <div class="_tText"></div>
+            <div class="_tText_s"></div>
+          </div>
+        </div>
+      </div>
+      <div class="container_terms">
+        <button id="_open" class="_btn btnNew btnTerms">
+          termeni si condiții
+        </button>
+        <div id="_terms" class="terms_modal"></div>
+      </div>
+    </div>
+
+    <div class="audio">
+      <audio
+        controls="controls"
+        muted="muted"
+        id="wheel"
+        src="./audio/wheel.mp3"
+        type="audio/mp3"
+      ></audio>
+      <audio
+        controls="controls"
+        muted="muted"
+        id="positivePopUp"
+        src="./audio/positivePopUp.mp3"
+        type="audio/mp3"
+      ></audio>
+
+      <audio
+        controls="controls"
+        muted="muted"
+        id="winningLarge"
+        src="./audio/winningLarge.mp3"
+        type="audio/mp3"
+      ></audio>
+
+      <audio
+        controls="controls"
+        muted="muted"
+        id="you_win"
+        src="./audio/you_win.mp3"
+        type="audio/mp3"
+      ></audio>
+
+      <audio
+        controls="controls"
+        muted="muted"
+        id="bonusWin"
+        src="./audio/bonusWin.mp3"
+        type="audio/mp3"
+      ></audio>
+      <audio
+        controls="controls"
+        id="cardsShow"
+        muted="muted"
+        src="./audio/cardsShow.mp3"
+        type="audio/mp3"
+      ></audio>
+      <audio
+        controls="controls"
+        muted="muted"
+        id="jackpotWin"
+        src="./audio/jackpotWin.mp3"
+        type="audio/mp3"
+      ></audio>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scratchcard-js@1.5.5/build/scratchcard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <script>
+      window.addEventListener("load", function () {
+        var splashScreen = document.getElementById("splashScreen");
+        if (splashScreen) {
+          splashScreen.style.display = "none";
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        var mainContent = document.getElementById("mainContent");
+        if (mainContent) {
+          mainContent.style.display = "block";
+        }
+      });
+    </script>
+    <script></script>
+    <!-- <script src="./splash.js"></script> -->
+    <script src="./script.js" defer></script>
+    <script src="./scratch.js" defer></script>
+    <script src="./confetti.js" defer></script>
+  </body>
+</html>
