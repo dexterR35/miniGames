@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.86.0/phaser.min.js" integrity="sha512-waUKuZvSZPBchxTFI+DIW2sL/ijFxRwaDhxHONM/IkC7yukwIBEYrXHuKYgWCcicbqvLMVLfj40+3wP+CcGMxw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.86.0/phaser-arcade-physics.js" integrity="sha512-qCu2pSy909+lz9bgrv6uZvVBW2MWlqdUwnz09iMB3Fj70DwxlgoyvzeThpZLpEEnAI48IpGlxTwh/5+qbxc5Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Document</title>
+</head>
+<body>
+    
+<style>
+    img {
+        width: 50%;
+    }
+</style>
+<script>
+    function preload() {
+        // Load images for slot symbols, UI, and the win popup
+        this.load.image("cherry", "./dices.png");
+        this.load.image("bell", "./bell.png");
+        this.load.image("seven", "./star.png");
+        this.load.image("orange", "./orange.png");
+        this.load.image("lemon", "./che-right.png");
+        this.load.image("background", "./slot-bg.png");
+        this.load.image("spinButton", "./spin.png");
+        this.load.image("winPopup", "./win_popup.png");
+        this.load.image("closeButton", "./close.png");
+    }
+    
+    let balance = 1000;
+    let bet = 10;
+    const maxBet = 100;
+    let spinCount = 0;
+    let consecutiveWins = 0;
+    const maxSpins = 522;
+    const numReels = 5;        
+    const symbolsPerReel = 5;  
+    const reelSymbols = ["cherry", "bell", "seven", "orange", "lemon"]; 
+    const symbolIndices = { "cherry": 0, "bell": 1, "seven": 2, "orange": 3, "lemon": 4 };
+    
+    let reelsStopped = 0;
+    let popupActive = false;
+    
+    function create() {
+        setupUI.call(this);
+        initializeReels.call(this);
+        setupSpinButton.call(this);
+        setupBetControls.call(this);
+        setupWinPopup.call(this);
+    
+        this.input.once('pointerdown', () => {
+            if (this.sound.context.state === 'suspended') {
+                this.sound.context.resume();
+            }
+        });
+    }
+    
+    function setupUI() {
+        this.add.image(400, 300, "background").setDisplaySize(800, 600);
+        this.balanceText = this.add.text(50, 500, `Balance: $${balance}`, { fontSize: "24px", fill: "#FFF" });
+        this.betText = this.add.text(50, 540, `Bet: $${bet}`, { fontSize: "24px", fill: "#FFF" });
+    }
+    
+    function initializeReels() {
+        this.reels = [];
+        const reelWidth = 100;
+        const totalWidth = reelWidth * numReels;
+        const startX = (800 - totalWidth) / 2;
+    
+        for (let i = 0; i < numReels; i++) {
+            const reel = [];
+            const xPosition = startX + i * reelWidth;
+    
+            for (let j = 0; j < symbolsPerReel; j++) {
+                const randomSymbol = Phaser.Utils.Array.GetRandom(reelSymbols);
+                const symbolIndex = symbolIndices[randomSymbol];
+                let symbol = this.add.image(xPosition, 100 + j * 100, randomSymbol);
+                symbol.symbolIndex = symbolIndex;
+                reel.push(symbol);
+            }
+            this.reels.push(reel);
+        }
+    }
+    
+    function setupSpinButton() {
+        this.spinButton = this.add.image(700, 500, "spinButton").setInteractive();
+        this.spinButton.on("pointerdown", () => {
+            if (balance >= bet && spinCount < maxSpins && !popupActive) {
+                startSpin.call(this);
+            } else if (spinCount >= maxSpins) {
+                console.log("Max spins reached!");
+            } else if (popupActive) {
+                console.log("Popup is active. Close it first to continue.");
+            } else {
+                console.log("Not enough balance");
+            }
+        });
+    }
+    
+    function setupBetControls() {
+        const increaseBetButton = this.add.text(50, 580, "+ Bet", { fontSize: "20px", fill: "#FFF" }).setInteractive();
+        increaseBetButton.on("pointerdown", () => {
+            if (bet + 10 <= maxBet && !popupActive) {
+                bet += 10;
+                this.betText.setText(`Bet: $${bet}`);
+            }
+        });
+    
+        const decreaseBetButton = this.add.text(120, 580, "- Bet", { fontSize: "20px", fill: "#FFF" }).setInteractive();
+        decreaseBetButton.on("pointerdown", () => {
+            if (bet - 10 >= 10 && !popupActive) {
+                bet -= 10;
+                this.betText.setText(`Bet: $${bet}`);
+            }
+        });
+    }
+    
+    function setupWinPopup() {
+        this.winPopup = this.add.image(400, 300, "winPopup").setVisible(false).setDepth(1);
+        this.winPopupText = this.add.text(360, 280, "You Win!", { fontSize: "32px", fill: "#FFF" }).setVisible(false).setDepth(2);
+        this.closeButton = this.add.image(400, 350, "closeButton").setInteractive().setVisible(false).setDepth(3);
+        this.closeButton.on("pointerdown", () => {
+            popupActive = false;
+            this.winPopup.setVisible(false);
+            this.winPopupText.setVisible(false);
+            this.closeButton.setVisible(false);
+        });
+    }
+    
+    function showWinPopup() {
+        popupActive = true;
+        this.winPopup.setVisible(true);
+        this.winPopupText.setVisible(true);
+        this.closeButton.setVisible(true);
+    }
+    
+    function startSpin() {
+        balance -= bet;
+        updateBalanceDisplay.call(this);
+        spinCount++;
+        reelsStopped = 0;
+        popupActive = true;
+        this.spinButton.disableInteractive();
+    
+        const isWinningSpin = spinCount === 3;
+    
+        this.reels.forEach((reel, index) => {
+            setReelSymbols.call(this, reel, isWinningSpin);
+        });
+    }
+    
+    function setReelSymbols(reel, isWinningSpin) {
+        const middleIndex = Math.floor(symbolsPerReel / 2);
+    
+        if (isWinningSpin) {
+            const winningSymbol = reelSymbols[Phaser.Math.Between(0, reelSymbols.length - 1)];
+            reel.forEach((symbol, i) => {
+                const randomSymbol = i === middleIndex ? winningSymbol : Phaser.Utils.Array.GetRandom(reelSymbols);
+                symbol.setTexture(randomSymbol);
+                symbol.symbolIndex = symbolIndices[randomSymbol];
+                symbol.y = 100 + i * 100;
+            });
+        } else {
+            reel.forEach((symbol, i) => {
+                const randomSymbol = Phaser.Utils.Array.GetRandom(reelSymbols);
+                symbol.setTexture(randomSymbol);
+                symbol.symbolIndex = symbolIndices[randomSymbol];
+                symbol.y = 100 + i * 100;
+            });
+        }
+        reelsStopped++;
+        if (reelsStopped === numReels) {
+            popupActive = false;
+            this.spinButton.setInteractive();
+            checkWin.call(this);
+        }
+    }
+    
+    function checkWin() {
+        const middleIndex = Math.floor(symbolsPerReel / 2);
+        console.log(middleIndex,"middleindex");
+        const winningIndex = this.reels[0][middleIndex].symbolIndex;
+        console.log(winningIndex,"winningIndex");
+        const isWin = this.reels.every(reel => reel[middleIndex].symbolIndex === winningIndex);
+    
+        if (isWin) {
+            consecutiveWins++;
+            const winnings = bet * 10;
+            balance += winnings;
+            updateBalanceDisplay.call(this);
+            showWinPopup.call(this);
+        }
+    }
+    
+    function updateBalanceDisplay() {
+        this.balanceText.setText(`Balance: $${balance}`);
+    }
+    
+    const config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        scene: {
+            preload: preload,
+            create: create,
+            startSpin: startSpin,
+            setReelSymbols: setReelSymbols,
+            checkWin: checkWin,
+            updateBalanceDisplay: updateBalanceDisplay,
+            showWinPopup: showWinPopup
+        },
+        physics: {
+            default: "arcade"
+        },
+        scale: {
+            mode: Phaser.Scale.RESIZE,
+            autoCenter: Phaser.Scale.CENTER_BOTH
+        }
+    };
+    
+    new Phaser.Game(config);
+    </script>
+    
+
+    
+    
+    
+</body>
+</html>

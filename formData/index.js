@@ -27,15 +27,15 @@ import {
 //   import { displayAttribute } from './formular.js';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDiOqUAHF9DX9x-VdRhaGPc2_Yfj305Jxc",
-  authDomain: "netbet-ea33f.firebaseapp.com",
+  apiKey: "",
+  authDomain: "",
   databaseURL:
-    "https://netbet-ea33f-default-rtdb.europe-west1.firebasedatabase.app",
+    "",
   projectId: "netbet-ea33f",
-  storageBucket: "netbet-ea33f.appspot.com",
-  messagingSenderId: "184670151760",
-  appId: "1:184670151760:web:08506858f2b8843fb19d55",
-  measurementId: "G-7FX1PZEFQW",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: "",
+  measurementId: "",
 };
 
 const app = initializeApp(firebaseConfig);

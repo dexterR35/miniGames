@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Phaser Game</title>
+    <style>
+        /* Ensure canvas fills the full screen without margin or padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #game-container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+    <script>
+        function preload() {
+            // Preload images and sounds
+            this.load.image("background", "./bg.webp");
+            this.load.image("balloon", "./dices.png"); // This will act as the dice
+            this.load.image("popup", "./phone.webp");
+            this.load.image("close", "./tinta.webp");
+            this.load.audio("popSound", "./popsound.mp3");
+        }
+        
+        function create() {
+            // Set background image to cover the entire canvas
+            this.background = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, "background")
+                .setDisplaySize(this.cameras.main.width, this.cameras.main.height).setOrigin(0.5, 0.5);
+
+            // Scaling factor for mobile screens
+            const scaleFactor = Math.min(window.devicePixelRatio, 2); 
+
+            // Create a group of dice images that dynamically adjust to the screen width
+            this.balloons = this.physics.add.group({
+                key: "balloon",
+                repeat: 4,
+                setXY: { x: 150, y: 100, stepX: this.cameras.main.width / 5 }
+            });
+
+            // Set initial popup (initially hidden)
+            this.popup = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, "popup")
+                .setScale(scaleFactor).setVisible(false).setDepth(2);
+            
+            // Close button for popup, initially hidden
+            this.closeButton = this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2 + 100, "close")
+                .setScale(scaleFactor).setInteractive().setVisible(false).setDepth(3);
+            
+            // Popup message text with responsive font size
+            this.popupText = this.add.text(this.cameras.main.width / 2, this.cameras.main.height / 2 - 50, "Balloon clicked!", {
+                fontSize: `${Math.round((this.cameras.main.width / 30) * scaleFactor)}px`,
+                color: '#ffffff',
+                fontStyle: 'bold'
+            }).setOrigin(0.5).setVisible(false).setDepth(3);
+
+            // Toggle popup visibility function
+            this.togglePopup = (show) => {
+                this.popup.setVisible(show);
+                this.closeButton.setVisible(show);
+                this.popupText.setVisible(show);
+                if (show) this.sound.play("popSound");
+            };
+
+            // Balloon click animation function
+            this.animateBalloon = (balloon) => {
+                this.tweens.add({
+                    targets: balloon,
+                    angle: 360,
+                    duration: 300,
+                    ease: 'Power1',
+                    onComplete: () => balloon.setAngle(0)
+                });
+            };
+
+            // Close button functionality
+            this.closeButton.on("pointerdown", () => this.togglePopup(false));
+
+            // Balloon click event to show popup and animate
+            this.balloons.children.iterate((balloon) => {
+                balloon.setInteractive().on("pointerdown", () => {
+                    if (!this.popup.visible) {
+                        this.animateBalloon(balloon);
+                        this.togglePopup(true);
+                    }
+                });
+
+                // Floating animation for balloons
+                this.tweens.add({
+                    targets: balloon,
+                    y: balloon.y + 10,
+                    duration: 1000,
+                    yoyo: true,
+                    repeat: -1,
+                    ease: "Sine.easeInOut"
+                });
+            });
+
+            // Adjust layout on window resize
+            this.scale.on('resize', this.resize, this);
+        }
+
+        // Attach resize as a method on the scene's prototype
+        function resize(gameSize) {
+            const width = gameSize.width;
+            const height = gameSize.height;
+            
+            // Update camera dimensions
+            this.cameras.main.setSize(width, height);
+
+            // Update background to cover the full screen
+            this.background.setDisplaySize(width, height);
+            
+            // Scaling factor for responsiveness
+            const scaleFactor = Math.min(window.devicePixelRatio, 2);
+
+            // Adjust popup, close button, and text
+            this.popup.setPosition(width / 2, height / 2).setScale(scaleFactor);
+            this.closeButton.setPosition(width / 2, height / 2 + (100 * scaleFactor)).setScale(scaleFactor);
+            this.popupText.setFontSize(Math.round((width / 30) * scaleFactor)).setPosition(width / 2, height / 2 - (50 * scaleFactor));
+            
+            // Dynamically distribute balloons
+            this.balloons.children.iterate((balloon, index) => {
+                balloon.setX((width / 5) * (index + 1));
+                balloon.setY(height / 4);
+                balloon.setScale(scaleFactor / 1.5); // Scale the dice for mobile friendliness
+            });
+        }
+
+        // Initialize Phaser game with responsive settings
+        new Phaser.Game({
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            parent: 'game-container',
+            scene: { preload: preload, create: create, resize: resize },
+            physics: { default: "arcade" },
+            scale: { 
+                mode: Phaser.Scale.RESIZE, // Auto resize on window change
+                autoCenter: Phaser.Scale.CENTER_BOTH 
+            }
+        });
+    </script>
+</body>
+</html>

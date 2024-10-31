@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.86.0/phaser.min.js" integrity="sha512-waUKuZvSZPBchxTFI+DIW2sL/ijFxRwaDhxHONM/IkC7yukwIBEYrXHuKYgWCcicbqvLMVLfj40+3wP+CcGMxw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+<body>
+    <script>
+let score = 0;
+let scoreText;
+let clickedCount = 0;
+let missedCount = 0;
+let missedText;
+let gameOver = true; // Start with the game in a "stopped" state
+let popupShown = false;
+let previousPointerPosition = null;
+let countdown = 15;
+let countdownText;
+let playerName = "";
+let leaderboardPopup, leaderboardText;
+let startButton, nameInput;
+let countdownEvent;
+let ground; // Define ground here for proper scoping
+
+function preload() {
+    this.load.image("background", "./bg2.webp");
+    this.load.image("box", "./bell.png");
+    this.load.image("box_half", "./che-right.png");
+    this.load.image("slice_effect", "./star.png");
+    this.load.audio("slice_sound", "./slice.mp3");
+}
+
+function create() {
+    // Background and initial setup
+    this.add.image(this.cameras.main.width / 2, this.cameras.main.height / 2, "background")
+        .setDisplaySize(this.cameras.main.width, this.cameras.main.height);
+
+    // Create Start Button and Input Field
+    createStartUI(this);
+
+    // Score, Clicked, Missed, and Countdown texts
+    scoreText = this.add.text(16, 16, "Score: 0", { fontSize: "32px", fill: "#fff" });
+    clickedText = this.add.text(16, 50, "Clicked: 0", { fontSize: "24px", fill: "#fff" });
+    missedText = this.add.text(16, 80, "Missed: 0", { fontSize: "24px", fill: "#fff" });
+    countdownText = this.add.text(16, 110, "Time: " + countdown, { fontSize: "24px", fill: "#fff" });
+    hideGameUI();
+
+    // Set up the ground
+    ground = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height - 10, this.cameras.main.width, 20).setVisible(false);
+    this.physics.add.existing(ground, true);
+
+    // Handle pointer movement for slicing, but only if game is active
+    this.input.on('pointermove', (pointer) => {
+        if (!gameOver && previousPointerPosition) {
+            detectSlice(this, pointer, ground);
+            createSlicingTrail(this, pointer);
+        }
+        previousPointerPosition = { x: pointer.x, y: pointer.y };
+    });
+}
+
+function startGame(scene) {
+    resetGame();
+    hideStartUI();
+    showGameUI();
+    gameOver = false; // Game is now active
+
+    // Start the countdown timer
+    countdownEvent = scene.time.addEvent({
+        delay: 1000,
+        callback: () => {
+            countdown -= 1;
+            countdownText.setText("Time: " + countdown);
+            if (countdown <= 0) {
+                endGame(scene);
+            }
+        },
+        callbackScope: scene,
+        loop: true
+    });
+
+    // Start spawning boxes
+    spawnBoxWithRandomDelay(scene, ground);
+}
+
+function detectSlice(scene, pointer, ground) {
+    let boxes = scene.physics.world.bodies.entries.filter(body => body.gameObject.texture.key === 'box');
+    boxes.forEach(body => {
+        let box = body.gameObject;
+        if (!box.sliced && Phaser.Geom.Intersects.LineToRectangle(
+            new Phaser.Geom.Line(previousPointerPosition.x, previousPointerPosition.y, pointer.x, pointer.y),
+            box.getBounds()
+        )) {
+            sliceBox(scene, box);
+            score += 10;
+            clickedCount += 1;
+            scoreText.setText("Score: " + score);
+            clickedText.setText("Clicked: " + clickedCount);
+
+            if (score >= 100 && !popupShown) {
+                showPopup(scene);
+                popupShown = true;
+            }
+
+            scene.sound.play("slice_sound");
+        }
+    });
+}
+
+function createSlicingTrail(scene, pointer) {
+    let effect = scene.add.image(pointer.x, pointer.y, 'slice_effect').setScale(0.3);
+    scene.tweens.add({
+        targets: effect,
+        alpha: 0,
+        scale: 0.1,
+        duration: 300,
+        onComplete: () => effect.destroy()
+    });
+}
+
+function spawnBoxWithRandomDelay(scene, ground) {
+    if (gameOver) return; // Only spawn boxes if the game is active
+
+    let delay = Phaser.Math.Between(500, 1000);
+
+    scene.time.addEvent({
+        delay: delay,
+        callback: () => {
+            spawnBox(scene, ground);
+            spawnBoxWithRandomDelay(scene, ground); // Keep spawning boxes
+        },
+        callbackScope: scene,
+        loop: false
+    });
+}
+
+function spawnBox(scene, ground) {
+    if (gameOver) return;
+
+    let x = Phaser.Math.Between(50, scene.cameras.main.width - 50);
+    let box = scene.physics.add.image(x, 0, "box");
+    box.setGravityY(100);
+    box.setBounce(0.5);
+    box.setDrag(10);
+    box.setVelocityX(Phaser.Math.Between(-50, 50));
+    box.sliced = false;
+    box.setAngularVelocity(Phaser.Math.Between(-200, 200));
+
+    // Add collision with ground to track missed boxes
+    scene.physics.add.collider(box, ground, () => {
+        missedCount += 1;
+        missedText.setText("Missed: " + missedCount);
+        box.destroy();
+    });
+}
+
+function sliceBox(scene, box) {
+    box.sliced = true;
+    let half1 = scene.physics.add.image(box.x - 15, box.y, "box_half").setScale(0.5);
+    let half2 = scene.physics.add.image(box.x + 15, box.y, "box_half").setScale(0.5);
+
+    half1.setVelocity(Phaser.Math.Between(-100, -50), Phaser.Math.Between(-100, -50));
+    half2.setVelocity(Phaser.Math.Between(50, 100), Phaser.Math.Between(-100, -50));
+    half1.setGravityY(200);
+    half2.setGravityY(200);
+
+    box.destroy();
+
+    scene.tweens.add({
+        targets: [half1, half2],
+        alpha: 0,
+        duration: 800,
+        onComplete: () => {
+            half1.destroy();
+            half2.destroy();
+        }
+    });
+}
+
+function showPopup(scene) {
+    let popup = scene.add.rectangle(scene.cameras.main.width / 2, scene.cameras.main.height / 2, 300, 150, 0x000000, 0.8);
+    let popupText = scene.add.text(scene.cameras.main.width / 2 - 60, scene.cameras.main.height / 2 - 20, "100 Points!\nKeep going!", {
+        fontSize: "32px",
+        fill: "#ffffff",
+        align: "center"
+    });
+
+    scene.time.delayedCall(2000, () => {
+        popup.destroy();
+        popupText.destroy();
+    });
+}
+
+function endGame(scene) {
+    gameOver = true; // Stop game activity
+    countdownEvent.remove(); // Stop the countdown timer
+    saveScore();
+    showLeaderboard(scene);
+    scene.physics.pause();
+}
+
+function saveScore() {
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+    leaderboard.push({ name: playerName, score: score });
+    leaderboard.sort((a, b) => b.score - a.score);
+    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+}
+
+function showLeaderboard(scene) {
+    leaderboardPopup = scene.add.rectangle(scene.cameras.main.width / 2, scene.cameras.main.height / 2, 400, 300, 0x000000, 0.8);
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+    let leaderboardTextContent = "Leaderboard:\n";
+    leaderboard.slice(0, 5).forEach((entry, index) => {
+        leaderboardTextContent += `${index + 1}. ${entry.name}: ${entry.score}\n`;
+    });
+    leaderboardText = scene.add.text(scene.cameras.main.width / 2 - 150, scene.cameras.main.height / 2 - 100, leaderboardTextContent, {
+        fontSize: "24px",
+        fill: "#ffffff",
+        align: "left"
+    });
+
+    let closeBtn = scene.add.text(scene.cameras.main.width / 2 - 30, scene.cameras.main.height / 2 + 100, "Close", {
+        fontSize: "32px",
+        fill: "#ffffff"
+    }).setInteractive();
+
+    closeBtn.on("pointerdown", () => {
+        leaderboardPopup.destroy();
+        leaderboardText.destroy();
+        closeBtn.destroy();
+        showStartUI();
+    });
+}
+
+function createStartUI(scene) {
+    startButton = scene.add.text(scene.cameras.main.width / 2 - 50, scene.cameras.main.height / 2, "Start Game", { fontSize: "32px", fill: "#ffffff" }).setInteractive();
+    nameInput = document.createElement("input");
+    nameInput.setAttribute("type", "text");
+    nameInput.setAttribute("placeholder", "Enter Name");
+    nameInput.style.position = "absolute";
+    nameInput.style.left = `${scene.cameras.main.width / 2 - 60}px`;
+    nameInput.style.top = `${scene.cameras.main.height / 2 - 50}px`;
+    document.body.appendChild(nameInput);
+
+    startButton.on("pointerdown", () => {
+        playerName = nameInput.value.trim() || "Player";
+        startGame(scene);
+    });
+}
+
+function hideStartUI() {
+    startButton.setVisible(false);
+    nameInput.style.display = "none";
+}
+
+function showStartUI() {
+    startButton.setVisible(true);
+    nameInput.style.display = "block";
+}
+
+function hideGameUI() {
+    scoreText.setVisible(false);
+    clickedText.setVisible(false);
+    missedText.setVisible(false);
+    countdownText.setVisible(false);
+}
+
+function showGameUI() {
+    scoreText.setVisible(true);
+    clickedText.setVisible(true);
+    missedText.setVisible(true);
+    countdownText.setVisible(true);
+}
+
+function resetGame() {
+    score = 0;
+    clickedCount = 0;
+    missedCount = 0;
+    countdown = 15;
+    gameOver = false;
+    popupShown = false;
+    scoreText.setText("Score: 0");
+    clickedText.setText("Clicked: 0");
+    missedText.setText("Missed: 0");
+    countdownText.setText("Time: " + countdown);
+}
+
+new Phaser.Game({
+    type: Phaser.AUTO,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    physics: {
+        default: "arcade",
+        arcade: {
+            debug: false,
+            gravity: { y: 100 }
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create
+    }
+});
+
+
+        </script>
+</body>
+</html>
