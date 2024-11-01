@@ -16,6 +16,7 @@
       body {
         height: 100vh;
         overflow: hidden;
+        background: #010408;
       }
       body::after {
         content: "";
@@ -24,7 +25,20 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url(./room-ro.png);
+        background-image: url(./room-ro2.png);
+        z-index: -1;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+      }
+      body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url(./room-ro2-cut.png);
         z-index: -1;
         background-repeat: no-repeat;
         background-position: center;
@@ -34,19 +48,19 @@
       /* Basic styling for the button */
 
       /* Stiluri pentru cercuri și container */
-.girl {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  transform: translate(-50%, -50%);
-}
-.girl img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
+      .girl {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        transform: translate(-50%, -50%);
+      }
+      .girl img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
       .circle {
         width: 120px;
         height: 120px;
@@ -122,15 +136,45 @@
         backdrop-filter: blur(5px);
         mask-image: radial-gradient(circle, rgba(0, 0, 0, 0) 45%, black 60%);
       }
+
+      #snowCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* Ensure it's above the background */
+      }
+
+      #controlPanel {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 2;
+        font-family: "Arial";
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+      }
     </style>
   </head>
   <body>
+    <!-- <div id="controlPanel">
+      <label for="sizeRange">Snowflake Size:</label>
+      <input type="range" id="sizeRange" min="1" max="10" value="4" />
+
+      <label for="speedRange">Snowflake Speed:</label>
+      <input type="range" id="speedRange" min="1" max="10" value="2" />
+    </div> -->
+
+    <canvas id="snowCanvas"></canvas>
+
     <!-- <button id="start-sparkle">Start Sparkle Explosion</button> -->
     <div class="wrapp-container">
       <div class="structure">
-        <div class="girl"><img src="./girl.webp" alt=""></div>
+        <div class="girl"><img src="./girl.webp" alt="" /></div>
         <div id="circle-container">
-       
           <div class="circle" id="circle1"></div>
           <div class="circle" id="circle2"></div>
           <div class="circle" id="circle3"></div>
@@ -146,222 +190,7 @@
         Continuă
       </button>
     </div>
-
-    <script>
-      $(function () {
-        let circlesClicked = false;
-
-        $(".circle").click(function () {
-          if (circlesClicked) return;
-          circlesClicked = true;
-
-          // Capture the start time when the button is clicked
-          const startTime = performance.now();
-
-          // Get the clicked circle's position
-          const circlePosition = $(this).offset();
-          const circleWidth = $(this).outerWidth();
-          const circleHeight = $(this).outerHeight();
-
-          $(this).css("visibility", "hidden"); ///remove()
-
-          $(".sparkley:first").sparkleh({
-            startX: circlePosition.left + circleWidth / 2,
-            startY: circlePosition.top + circleHeight / 2,
-            startTime: startTime, // Pass the click start time to sparkleh
-            onComplete: function () {
-              // Reset circlesClicked to allow re-clicking after animation finishes
-              circlesClicked = false;
-            },
-          });
-
-          setTimeout(function () {
-            $("#congratulations-modal").fadeIn();
-          }, 800);
-        });
-      });
-
-      $.fn.sparkleh = function (options) {
-        return this.each(function (k, v) {
-          var $this = $(v).css("position", "relative");
-          var settings = $.extend(
-            {
-              width: window.innerWidth,
-              height: window.innerHeight,
-              color: "rainbow",
-              count: 300,
-              overlap: 0,
-              speed: 5,
-              startTime: null, // Store the start time from the click
-              onComplete: null, // Callback function to reset circlesClicked
-            },
-            options
-          );
-          var sparkle = new Sparkle($this, settings);
-        });
-      };
-
-      function Sparkle($parent, options) {
-        this.options = options;
-        this.init($parent);
-      }
-
-      Sparkle.prototype = {
-        init: function ($parent) {
-          var _this = this;
-          this.$canvas = $("<canvas>")
-            .addClass("sparkle-canvas")
-            .css({
-              position: "fixed",
-              top: "0",
-              left: "0",
-              width: "100%",
-              height: "100%",
-              "pointer-events": "none",
-              "z-index": 1000,
-            })
-            .appendTo($parent);
-
-          this.canvas = this.$canvas[0];
-          this.context = this.canvas.getContext("2d");
-
-          this.sprite = new Image();
-          this.sprites = [0, 20, 0, 20];
-
-          this.sprite.onload = () => {
-            this.canvas.width = window.innerWidth;
-            this.canvas.height = window.innerHeight;
-            this.particles = this.createSparkles(
-              this.canvas.width,
-              this.canvas.height
-            );
-            this.anim = null;
-            this.fadeStart = null; 
-
-            this.over();
-          };
-
-          this.sprite.src = "./image.png";
-        },
-
-        createSparkles: function (w, h) {
-          var holder = [];
-          for (var i = 0; i < this.options.count; i++) {
-            var color = this.options.color;
-            if (this.options.color == "rainbow") {
-              color =
-                "#" +
-                (
-                  "000000" + Math.floor(Math.random() * 16777215).toString(16)
-                ).slice(-6);
-            } else if ($.type(this.options.color) === "array") {
-              color =
-                this.options.color[
-                  Math.floor(Math.random() * this.options.color.length)
-                ];
-            }
-
-            holder[i] = {
-              position: { x: this.options.startX, y: this.options.startY },
-              style: this.sprites[Math.floor(Math.random() * 4)],
-              delta: { x: Math.random() - 0.5, y: Math.random() - 0.5 },
-              size: parseFloat((Math.random() * 5).toFixed(1)),
-              color: color,
-              opacity: 1,
-              lifespan: 5000,
-            };
-          }
-          return holder;
-        },
-
-        draw: function (elapsedTime) {
-          let ctx = this.context;
-          ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-          for (var i = 0; i < this.options.count; i++) {
-            const derpicle = this.particles[i];
-            const modulus = Math.floor(Math.random() * 7);
-            if (Math.floor(elapsedTime) % modulus === 0) {
-              derpicle.style = this.sprites[Math.floor(Math.random() * 4)];
-            }
-            ctx.save();
-            ctx.globalAlpha = derpicle.opacity;
-            ctx.drawImage(
-              this.sprite,
-              derpicle.style,
-              0,
-              7,
-              7,
-              derpicle.position.x,
-              derpicle.position.y,
-              7,
-              7
-            );
-            if (this.options.color) {
-              ctx.globalCompositeOperation = "source-atop";
-              ctx.globalAlpha = 0.5;
-              ctx.fillStyle = derpicle.color;
-              ctx.fillRect(derpicle.position.x, derpicle.position.y, 7, 7);
-            }
-            ctx.restore();
-          }
-        },
-
-        update: function (timestamp) {
-          var _this = this;
-
-          // Calculate the elapsed time since the click event
-          const elapsedTime = timestamp - this.options.startTime;
-
-          this.anim = window.requestAnimationFrame(function (time) {
-            // Start fading after 4 seconds (4000 ms)
-            if (elapsedTime >= 4000 && !_this.fadeStart) {
-              _this.fadeStart = elapsedTime;
-            }
-            // If fading has started,  reduce opacity
-            if (_this.fadeStart) {
-              const fadeElapsed = elapsedTime - _this.fadeStart;
-              const fadeDuration = 4000; 
-              console.log(fadeElapsed, "fadeElapsed");
-              for (var i = 0; i < _this.options.count; i++) {
-                const u = _this.particles[i];
-                u.opacity = Math.max(1 - fadeElapsed / fadeDuration, 0);
-              }
-
-              // Stop animation and remove canvas after fading is complete
-              if (fadeElapsed >= fadeDuration) {
-                window.cancelAnimationFrame(_this.anim);
-                _this.$canvas.remove();
-                //callback to reset circlesClicked
-                if (_this.options.onComplete) _this.options.onComplete();
-                return;
-              }
-            } else {
-              // Move particles if not fading
-              for (var i = 0; i < _this.options.count; i++) {
-                const u = _this.particles[i];
-                u.position.x += u.delta.x * _this.options.speed * 3;
-                u.position.y += u.delta.y * _this.options.speed * 3;
-              }
-            }
-
-            _this.draw(elapsedTime);
-            _this.update(time);
-          });
-        },
-
-        over: function () {
-          if (!this.particles) {
-            console.error("Particles array is undefined.");
-            return;
-          }
-
-          for (var i = 0; i < this.particles.length; i++) {
-            this.particles[i].opacity = Math.random();
-          }
-
-          this.update(performance.now());
-        },
-      };
-    </script>
+    <script src="./snow.js"></script>
+<script src="./particle.js" defer></script>
   </body>
 </html>
