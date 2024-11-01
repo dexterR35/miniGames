@@ -1,15 +1,11 @@
-
-$(function () {
+document.addEventListener("DOMContentLoaded", function() {
   let circlesClicked = false;
 
   $(".circle").click(function () {
     if (circlesClicked) return;
     circlesClicked = true;
-
     // Capture the start time when the button is clicked
     const startTime = performance.now();
-
-    // Get the clicked circle's position
     const circlePosition = $(this).offset();
     const circleWidth = $(this).outerWidth();
     const circleHeight = $(this).outerHeight();
@@ -19,9 +15,8 @@ $(function () {
     $(".sparkley:first").sparkleh({
       startX: circlePosition.left + circleWidth / 2,
       startY: circlePosition.top + circleHeight / 2,
-      startTime: startTime, // Pass the click start time to sparkleh
+      startTime: startTime,
       onComplete: function () {
-        // Reset circlesClicked to allow re-clicking after animation finishes
         circlesClicked = false;
       },
     });
@@ -34,8 +29,8 @@ $(function () {
 
 $.fn.sparkleh = function (options) {
   return this.each(function (k, v) {
-    var $this = $(v).css("position", "relative");
-    var settings = $.extend(
+    const $this = $(v).css("position", "relative");
+    const settings = $.extend(
       {
         width: window.innerWidth,
         height: window.innerHeight,
@@ -43,12 +38,12 @@ $.fn.sparkleh = function (options) {
         count: 300,
         overlap: 0,
         speed: 5,
-        startTime: null, // Store the start time from the click
-        onComplete: null, // Callback function to reset circlesClicked
+        startTime: null,
+        onComplete: null,
       },
       options
     );
-    var sparkle = new Sparkle($this, settings);
+    let sparkle = new Sparkle($this, settings);
   });
 };
 
@@ -59,7 +54,7 @@ function Sparkle($parent, options) {
 
 Sparkle.prototype = {
   init: function ($parent) {
-    var _this = this;
+    const _this = this;
     this.$canvas = $("<canvas>")
       .addClass("sparkle-canvas")
       .css({
@@ -88,90 +83,85 @@ Sparkle.prototype = {
       );
       this.anim = null;
       this.fadeStart = null;
-
       this.over();
     };
-
     this.sprite.src = "./image.png";
   },
 
   createSparkles: function (w, h) {
-    var holder = [];
-    for (var i = 0; i < this.options.count; i++) {
-      var color = this.options.color;
-      if (this.options.color == "rainbow") {
-        color =
-          "#" +
-          (
-            "000000" + Math.floor(Math.random() * 16777215).toString(16)
-          ).slice(-6);
-      } else if ($.type(this.options.color) === "array") {
-        color =
-          this.options.color[
-            Math.floor(Math.random() * this.options.color.length)
-          ];
-      }
+    const particles = [];
+    for (let i = 0; i < this.options.count; i++) {
+      const color = this.options.color === "rainbow"
+        ? `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0")}`
+        : Array.isArray(this.options.color)
+        ? this.options.color[Math.floor(Math.random() * this.options.color.length)]
+        : this.options.color;
 
-      holder[i] = {
+      particles.push({
         position: { x: this.options.startX, y: this.options.startY },
-        style: this.sprites[Math.floor(Math.random() * 4)],
+        style: this.sprites[Math.floor(Math.random() * this.sprites.length)],
         delta: { x: Math.random() - 0.5, y: Math.random() - 0.5 },
-size: parseFloat((10 + Math.random() * 10).toFixed(1)),
-        color: color,
+        size: parseFloat((10 + Math.random() * 10).toFixed(1)),
+        color,
         opacity: 1,
-        lifespan: 5000,
-      };
+      });
     }
-    return holder;
+    return particles;
   },
 
   draw: function (elapsedTime) {
     let ctx = this.context;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    for (var i = 0; i < this.options.count; i++) {
-      const derpicle = this.particles[i];
-      const modulus = Math.floor(Math.random() * 7);
-      if (Math.floor(elapsedTime) % modulus === 0) {
-        derpicle.style = this.sprites[Math.floor(Math.random() * 4)];
+
+    for (let i = 0; i < this.options.count; i++) {
+      const objParticles = this.particles[i];
+      // const modulus = Math.floor(Math.random() * 1);
+      // console.log(modulus,"modulus")
+
+      if (Math.floor(elapsedTime)) {
+        objParticles.style = this.sprites[Math.floor(Math.random() * 4)];
       }
       ctx.save();
-      ctx.globalAlpha = derpicle.opacity;
+      ctx.globalAlpha = objParticles.opacity;
       ctx.drawImage(
         this.sprite,
-        derpicle.style,
+        objParticles.style,
         0,
         7,
         7,
-        derpicle.position.x,
-        derpicle.position.y,
+        objParticles.position.x,
+        objParticles.position.y,
         12,
-        12,
+        12
       );
       if (this.options.color) {
         ctx.globalCompositeOperation = "source-atop";
         ctx.globalAlpha = 0.5;
-        ctx.fillStyle = derpicle.color;
-        ctx.fillRect(derpicle.position.x, derpicle.position.y, 7, 7);
+        ctx.fillStyle = objParticles.color;
+        ctx.fillRect(objParticles.position.x, objParticles.position.y, 7, 7);
       }
       ctx.restore();
     }
   },
 
   update: function (timestamp) {
-    var _this = this;
-        // Calculate the elapsed time since the click event
+    let _this = this;
+    // Calculate the elapsed time since the click event
     const elapsedTime = timestamp - this.options.startTime;
     this.anim = window.requestAnimationFrame(function (time) {
-      // Start fading after 4 seconds (4000 ms)
       if (elapsedTime >= 4000 && !_this.fadeStart) {
         _this.fadeStart = elapsedTime;
       }
-      // If fading has started,  reduce opacity
+      // If fading has started, reduce opacity
       if (_this.fadeStart) {
         const fadeElapsed = elapsedTime - _this.fadeStart;
         const fadeDuration = 1000;
         // Stop animation and remove canvas after fading is complete
         if (fadeElapsed >= fadeDuration) {
+          console.log(
+            fadeElapsed >= fadeDuration,
+            "fadeElapsed >= fadeDuration"
+          );
           window.cancelAnimationFrame(_this.anim);
           _this.$canvas.remove();
           //callback to reset circlesClicked
@@ -180,9 +170,9 @@ size: parseFloat((10 + Math.random() * 10).toFixed(1)),
         }
       } else {
         // Move particles if not fading
-        for (var i = 0; i < _this.options.count; i++) {
+        for (let i = 0; i < _this.options.count; i++) {
           const u = _this.particles[i];
-          //expanding point
+          //expanding from center
           u.position.x += u.delta.x * _this.options.speed * 6;
           u.position.y += u.delta.y * _this.options.speed * 6;
         }
@@ -198,7 +188,7 @@ size: parseFloat((10 + Math.random() * 10).toFixed(1)),
       console.error("Particles array is undefined.");
       return;
     }
-    console.log(this.particles.length,"test")
+    console.log(this.particles.length, "test");
     this.update(performance.now());
   },
 };

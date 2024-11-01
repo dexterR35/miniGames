@@ -1,8 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     var canvas = document.getElementById("snowCanvas");
     var ctx = canvas.getContext("2d");
-
-    // Set canvas size and resize handler
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -20,8 +18,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 y: Math.random() * canvas.height,
                 radius: (Math.random() * 2) + 3,  // Adjusted for a more subtle effect
                 speed: (Math.random() * 1.5) + 2,
-                sway: (Math.random() * 0.5) - 0.25, // Sway movement
-                opacity: Math.random() * 0.5 + 0.5  // Random opacity for softness
+                sway: (Math.random() * 0.5) - 1, // Sway movement
+                opacity: Math.random() * 0.5 + 0.5  
             });
         }
     }
@@ -34,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
             ctx.globalAlpha = snowflake.opacity;
             drawSnowflake(snowflake.x, snowflake.y, snowflake.radius);
         });
-        ctx.globalAlpha = 1;  // Reset alpha
+        ctx.globalAlpha = 1;  
     }
 
     // Function to draw an individual snowflake with sharp edges
@@ -43,30 +41,22 @@ document.addEventListener("DOMContentLoaded", function() {
         ctx.translate(x, y);
         ctx.beginPath();
 
-        // Loop through each branch of the snowflake (6 branches for a typical snowflake)
         for (let i = 0; i < 6; i++) {
             ctx.moveTo(0, 0);
-
-            // Draw the main branch
             ctx.lineTo(0, -radius);
-
-            // Draw smaller branches on each side
             ctx.moveTo(0, -radius / 2);
             ctx.lineTo(radius / 4, -radius * 0.75);
             ctx.moveTo(0, -radius / 2);
             ctx.lineTo(-radius / 4, -radius * 0.75);
-
             ctx.moveTo(0, -radius);
             ctx.lineTo(radius / 5, -radius * 1.25);
             ctx.moveTo(0, -radius);
             ctx.lineTo(-radius / 5, -radius * 1.25);
-
-            // Rotate to create the next branch
             ctx.rotate(Math.PI / 3);
         }
 
         ctx.strokeStyle = 'white';
-        ctx.lineWidth = 1.5;  // Reduced width for a more delicate appearance
+        ctx.lineWidth = 1.5; 
         ctx.stroke();
         ctx.restore();
     }
