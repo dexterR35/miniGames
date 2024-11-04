@@ -33,11 +33,10 @@
   --globe5: url(./src/img/glob5.webp);
 
   --box_front: url(./src/img/front-bg.png);
-  --box_back :url(./src/img/room2.webp);
+  --box_back: url(./src/img/room2.webp);
 
-  --bg-desktop:url(./src/img/room-cut.webp);
-  --bg-desktop-cut:url(./src/img/room-windows.webp);
-
+  --bg-desktop: url(./src/img/room-cut.webp);
+  --bg-desktop-cut: url(./src/img/room-windows.webp);
 }
 
 body {
@@ -64,7 +63,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background:var(--bg-desktop-cut);
+  background: var(--bg-desktop-cut);
   z-index: -1;
 }
 
@@ -74,6 +73,22 @@ body::after,
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+}
+
+#circle-container,
+.steps-container,
+.steps-container ul,.frame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#circle-container,
+#circle-container::after,
+.frame,
+.girl,.clockTop {
+  position: absolute;
+  transform: translate(-50%, -50%);
 }
 
 .structure {
@@ -88,9 +103,9 @@ body::after,
   left: 0;
   width: 100%;
   height: 100%;
-  background: #2929291c;
+  /* background: #2929291c; */
   -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0) 45%, black 60%);
-  backdrop-filter: blur(1.3px);
+  backdrop-filter: blur(2px);
   mask-image: radial-gradient(circle, rgba(0, 0, 0, 0) 45%, black 60%);
 }
 
@@ -110,17 +125,16 @@ body::after,
 }
 
 .girl {
-  position: absolute;
-  top: 50%;
+  top: 55%;
   left: 50%;
   width: 100%;
   height: 100%;
-  transform: translate(-50%, -50%);
+  position: relative;
 }
 
 .girl img {
   width: 100%;
-  height: 100%;
+  height: 95%;
   object-fit: contain;
 }
 
@@ -144,13 +158,8 @@ a {
 /* globes */
 #circle-container {
   width: fit-content;
-  position: absolute;
-  top: 50%;
+  top: 60%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   gap: 0px;
   z-index: 10;
   padding: 20px;
@@ -158,7 +167,6 @@ a {
 
 #circle-container::after {
   content: "";
-  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -167,6 +175,7 @@ a {
   border-radius: 10px;
   z-index: -1;
   filter: blur(4px);
+  transform: unset;
 }
 .circle {
   width: 120px;
@@ -174,7 +183,7 @@ a {
   border-radius: 50%;
   cursor: pointer;
   position: relative;
-  filter: drop-shadow(2px 4px 10px white);
+  filter: drop-shadow(2px 4px 10px var(--color_white));
 }
 .circle {
   background-size: contain !important;
@@ -194,5 +203,80 @@ a {
 .circle:nth-child(5) {
   background: var(--globe5);
 }
+.circle:hover {
+  animation: test 0.2s infinite;
+}
 
+@keyframes test {
+  50% {
+    transform: translate(4px, -2px);
+  }
+}
 /* end globes */
+
+/* steps */
+.steps-container {
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+  flex-direction: column;
+  position: relative;
+  top: 30px;
+}
+
+.steps-container ul {
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.steps-container ul li {
+  list-style: none;
+  color: var(--color_white);
+}
+.steps-container ul li:nth-child(1) {
+  transform: translateX(-10px);
+}
+.steps-container ul li:nth-child(2) {
+  transform: translateX(20px);
+}
+.steps-container ul li:nth-child(3) {
+  transform: translateX(35px);
+}
+
+.steps-container img {
+  width: fit-content;
+  height: auto;
+  object-fit: contain;
+}
+
+/* end steps */
+
+.frame {
+  width: fit-content;
+  z-index: 2;
+  top: 28%;
+  left: 37%;
+}
+.clockTop {
+  transform: skew(362deg,-2deg) translate(-50%, -49%) rotate(-1deg);
+}
+.frame img {
+  width: 90%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* clock */
+
+.clockTop {
+  color: var(--color_white);
+  top: 50%;
+  left:50%;
+  text-transform: uppercase;
+  text-align: center;
+}
+.smalltext {
+  background: green;
+}
+
+/* end Clock */

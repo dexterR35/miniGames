@@ -11,7 +11,24 @@
   <body>
     <canvas id="snowCanvas"></canvas>
     <div class="wrapp-container">
+   
+    
       <div class="structure">
+        <div class="frame">
+          <img src="./src/img/counter.png" alt="counter">
+          <div class="clockTop">
+            <span class="days">zile rămase</span>
+            <div class="smalltext" id="day"></div>
+          </div>
+        </div>
+        <div class="steps-container">
+          <img src="./src/img/steps_bg.png" alt="steps">
+          <ul>
+            <li>Alege un glob</li>
+            <li>Descoperă cadoul</li>
+            <li>Repetă in fiecare zi</li>
+          </ul>
+        </div>
         <div class="girl"><img src="./src/img/girl.webp" alt="" /></div>
         <div id="circle-container">
           <div class="circle" id="circle1"></div>
@@ -62,5 +79,6 @@
     <script src="./src/js/card.js"></script>
     <script src="./src/js/snow.js"></script>
     <script src="./src/js/particle.js"></script>
+    <script src="./src/js/utils.js"></script>
   </body>
 </html>

@@ -35,6 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
     
     resizeCanvas();
     initSnowflakes();
-    animate();
+    countdown();
+    anim_globes();
+    animate_all();
   });
   

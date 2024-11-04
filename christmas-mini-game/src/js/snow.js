@@ -84,15 +84,15 @@ function moveSnowflakes() {
     }
   }
 }
+
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 }
 window.addEventListener("resize", resizeCanvas);
-// Animate snowflakes
-function animate() {
+
+function animate_all() {
   drawSnowflakes();
   moveSnowflakes();
-  requestAnimationFrame(animate);
+  requestAnimationFrame(animate_all);
 }
-

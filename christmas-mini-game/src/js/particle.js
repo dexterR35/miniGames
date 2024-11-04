@@ -164,10 +164,3 @@ Sparkle.prototype = {
 };
 
 
-
-
-document.addEventListener("DOMContentLoaded", function() {
-
-});
-
-
