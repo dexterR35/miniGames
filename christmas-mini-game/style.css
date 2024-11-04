@@ -1,0 +1,198 @@
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --button_color: linear-gradient(to right, #ff1c26, #a81c1f);
+  --button_color-hover: linear-gradient(to left, #ff1c26, #a81c1f);
+  --color_blue: #c5e6ff;
+  --color_red: #ff0000;
+  --color_white: #fff;
+  --color_softGray: #bfbfbf;
+  --header_color: #141c33;
+  --footer_color: #010718;
+  --_lightGray: #e2e8f0;
+  --textShadow: #ff0000;
+
+  --textShadowFull: var(--textShadow) 0px 0px 10px,
+    var(--textShadow) 0px 0px 10px, var(--textShadow) 0px 0px 5px,
+    var(--textShadow) 0px 0px 16px;
+
+  --textShadowSmooth: var(--textShadow) 0px 0px 0px,
+    var(--textShadow) 0px 0px 10px, var(--textShadow) 0px 0px 2px,
+    var(--textShadow) 0px 0px 6px;
+
+  --globe1: url(./src/img/glob1.webp);
+  --globe2: url(./src/img/glob2.webp);
+  --globe3: url(./src/img/glob3.webp);
+  --globe4: url(./src/img/glob4.webp);
+  --globe5: url(./src/img/glob5.webp);
+
+  --box_front: url(./src/img/front-bg.png);
+  --box_back :url(./src/img/room2.webp);
+
+  --bg-desktop:url(./src/img/room-cut.webp);
+  --bg-desktop-cut:url(./src/img/room-windows.webp);
+
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  background: #010408;
+}
+
+body::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-desktop);
+  z-index: -1;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:var(--bg-desktop-cut);
+  z-index: -1;
+}
+
+body::before,
+body::after,
+.circle {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.structure {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.structure::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #2929291c;
+  -webkit-mask-image: radial-gradient(circle, rgba(0, 0, 0, 0) 45%, black 60%);
+  backdrop-filter: blur(1.3px);
+  mask-image: radial-gradient(circle, rgba(0, 0, 0, 0) 45%, black 60%);
+}
+
+#snowCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.wrapp-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.girl {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+}
+
+.girl img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* BUTTON */
+a {
+  text-decoration: none;
+}
+.btn {
+  display: block;
+  margin: 0 auto;
+  width: fit-content;
+  height: auto;
+  padding: 10px 40px;
+  background: var(--button_color);
+  color: var(--color_white);
+  border-radius: 7px;
+  text-transform: uppercase;
+}
+/* END BUTTON */
+
+/* globes */
+#circle-container {
+  width: fit-content;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0px;
+  z-index: 10;
+  padding: 20px;
+}
+
+#circle-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(7, 22, 88, 0.356);
+  border-radius: 10px;
+  z-index: -1;
+  filter: blur(4px);
+}
+.circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  filter: drop-shadow(2px 4px 10px white);
+}
+.circle {
+  background-size: contain !important;
+}
+.circle:nth-child(1) {
+  background: var(--globe1);
+}
+.circle:nth-child(2) {
+  background: var(--globe2);
+}
+.circle:nth-child(3) {
+  background: var(--globe3);
+}
+.circle:nth-child(4) {
+  background: var(--globe4);
+}
+.circle:nth-child(5) {
+  background: var(--globe5);
+}
+
+/* end globes */

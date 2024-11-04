@@ -5,175 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sparkle Effect</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-      *,
-      *::after,
-      *::before {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        height: 100vh;
-        overflow: hidden;
-        background: #010408;
-      }
-      body::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url(./room-ro2.png);
-        z-index: -1;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-      }
-      body::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url(./room-ro2-cut.png);
-        z-index: -1;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-      }
-
-      /* Basic styling for the button */
-
-      /* Stiluri pentru cercuri și container */
-      .girl {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100%;
-        height: 100%;
-        transform: translate(-50%, -50%);
-      }
-      .girl img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-      .circle {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        /* background-color: #4caf50; */
-        cursor: pointer;
-        position: relative;
-        background-image: url(./balls.png);
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: contain;
-      }
-      /* Stiluri pentru modal */
-      #congratulations-modal {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        padding: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        z-index: 2000;
-        text-align: center;
-      }
-      #congratulations-modal button {
-        margin-top: 15px;
-        padding: 10px 20px;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        cursor: pointer;
-      }
-      #congratulations-modal button:hover {
-        background-color: #45a049;
-      }
-
-      .wrapp-container {
-        width: 100%;
-        height: 100%;
-        position: relative;
-      }
-      #circle-container {
-        width: 100%;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0px;
-        z-index: 10;
-      }
-      .structure {
-        width: 100%;
-        height: 100%;
-        position: relative;
-      }
-      .structure::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #3facec1c;
-        -webkit-mask-image: radial-gradient(
-          circle,
-          rgba(0, 0, 0, 0) 45%,
-          black 60%
-        );
-        backdrop-filter: blur(5px);
-        mask-image: radial-gradient(circle, rgba(0, 0, 0, 0) 45%, black 60%);
-      }
-
-      #snowCanvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1; /* Ensure it's above the background */
-      }
-
-      #controlPanel {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        z-index: 2;
-        font-family: "Arial";
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-      }
-    </style>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./modal.css" />
   </head>
   <body>
-    <!-- <div id="controlPanel">
-      <label for="sizeRange">Snowflake Size:</label>
-      <input type="range" id="sizeRange" min="1" max="10" value="4" />
-
-      <label for="speedRange">Snowflake Speed:</label>
-      <input type="range" id="speedRange" min="1" max="10" value="2" />
-    </div> -->
-
     <canvas id="snowCanvas"></canvas>
-
-    <!-- <button id="start-sparkle">Start Sparkle Explosion</button> -->
     <div class="wrapp-container">
       <div class="structure">
-        <div class="girl"><img src="./girl.webp" alt="" /></div>
+        <div class="girl"><img src="./src/img/girl.webp" alt="" /></div>
         <div id="circle-container">
           <div class="circle" id="circle1"></div>
           <div class="circle" id="circle2"></div>
@@ -184,13 +23,44 @@
       </div>
       <div class="sparkley"></div>
     </div>
-    <div id="congratulations-modal">
-      <h2>Felicitări! Ai câștigat 250 de runde!</h2>
-      <button onclick="window.location.href='https://example.com'">
-        Continuă
-      </button>
+    <div id="_modal">
+      <div class="container-modal" id="open_modal">
+        <div id="shell">
+          <div id="container-box">
+            <div id="box1" class="box">
+              <h2>250 Runde Gratuite</h2>
+            </div>
+            <div id="box1_back" class="box"></div>
+            <div id="box2" class="box _box2">
+              <div class="box-header">
+                <h2>title</h2>
+              </div>
+              <div class="box-body">
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Quibusdam, corrupti dolorem. Dignissimos necessitatibus vitae
+                  laudantium quis ad, voluptatum impedit rerum.
+                </p>
+                <p>***</p>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Quibusdam, corrupti dolorem. Dignissimos necessitatibus vitae
+                  laudantium quis ad, voluptatum impedit rerum.
+                </p>
+
+                <p>250 runde gratuite</p>
+              </div>
+              <div class="box-footer">
+                <a href="#" class="btn">Inregistreaza-te</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <script src="./snow.js"></script>
-<script src="./particle.js"></script>
+    <script src="./index.js"></script>
+    <script src="./src/js/card.js"></script>
+    <script src="./src/js/snow.js"></script>
+    <script src="./src/js/particle.js"></script>
   </body>
 </html>
