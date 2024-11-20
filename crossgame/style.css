@@ -4,6 +4,8 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+
+  outline: 2px solid red;
 }
 :root {
   --bg-color: rgba(190, 39, 155, 0.53);
@@ -17,6 +19,8 @@
 
   --bg-desktop:url(./png/bg-desktop.jpg);
   --bg-mobile:url(./png/bg-mobile.jpg);
+
+
 }
 body {
   display: flex;

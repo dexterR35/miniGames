@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+
+    <title>Document</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --__sport: rgb(100, 176, 0);
+        --__casino: transparent
+          linear-gradient(312deg, #1f71ad 0%, #00c0fa 100%) 0% 0% no-repeat
+          padding-box;
+        --__sport_hover: linear-gradient(135deg, #90e000, #64b000);
+        --button_color: linear-gradient(to right, #ff1c26, #a81c1f);
+        --button_color-hover: linear-gradient(to left, #ff1c26, #a81c1f);
+        --color_blue: #c5e6ff;
+        --color_red: #ff0000;
+        --color_white: #fff;
+        --color_softGray: #bfbfbf;
+        --header_color: #141c33;
+        --footer_color: #010718;
+        --_lightGray: #e2e8f0;
+        --color_form: #fff;
+        --textShadowFull: var(--textShadow) 0px 0px 10px,
+          var(--textShadow) 0px 0px 10px, var(--textShadow) 0px 0px 5px,
+          var(--textShadow) 0px 0px 16px;
+        --textShadow: #ff0000;
+        --textShadowSmooth: var(--textShadow) 0px 0px 0px,
+          var(--textShadow) 0px 0px 10px, var(--textShadow) 0px 0px 2px,
+          var(--textShadow) 0px 0px 6px;
+      }
+
+      *,
+      *::after,
+      *::before {
+        padding: 0;
+        margin: 0;
+        border: 0;
+        outline: none;
+        list-style: none;
+        box-sizing: border-box;
+        text-decoration: none;
+      }
+
+      body {
+        /* color: black; */
+        position: relative;
+        /* overflow: hidden; */
+      }
+
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      body::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url(./png/bg-desktop-new.jpg);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        z-index: -1;
+      }
+
+      #controls {
+        position: absolute;
+        top: 20%;
+        left: 10%;
+        transform: translate(-50%, -50%);
+        background: white;
+        color: black;
+        padding: 20px;
+        z-index: 2;
+      }
+
+      .wrapp-hero {
+        display: grid;
+        grid-template-columns: 0.8fr 1fr;
+        height: 100vh;
+        width: 100%;
+        place-content: center;
+        place-items: center;
+      }
+
+      .left-side {
+        height: 100%;
+        width: 100%;
+      }
+
+      .offer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        position: relative;
+        text-transform: uppercase;
+        width: 100%;
+        height: auto;
+        font-size: 3vh;
+      }
+
+      .offer-content {
+        transform: skew(-5deg, -7deg) scale(0.95);
+        -webkit-transform: skew(-5deg, -7deg) scale(0.95);
+        line-height: 1.1;
+      }
+
+      .offer-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-transform: uppercase;
+      }
+
+      .line-0 {
+        font-family: "montBlack";
+        font-size: 2.45em;
+        text-align: center;
+        width: 100%;
+        text-shadow: var(--textShadowFull);
+        color: var(--color_white);
+      }
+
+      .line-4 {
+        font-size: 3.9em;
+        margin-top: -0.15em;
+        margin-right: -0.1em;
+        text-shadow: var(--textShadowFull);
+        color: var(--color_white);
+      }
+
+      .line-2 {
+        font-family: "montExtraBold";
+        font-size: 1.6em;
+        color: var(--color_white);
+        margin-right: -0.7em;
+        color: var(--color_blue);
+        margin-top: -0.05em;
+      }
+
+      .line-6 {
+        width: 100%;
+        margin: 0.4em auto 0em;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .parent_right {
+        z-index: 10;
+      }
+
+      input {
+        border: 1px solid black;
+        padding: 10px;
+      }
+
+      button {
+        padding: 10px;
+        background: crimson;
+        color: white;
+      }
+      .test {
+        z-index: 10;
+        position: absolute;
+        top: 3%;
+        left: 0;
+        color: white;
+      }
+      .light {
+        position: relative;
+      }
+
+      .light:before {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        content: "";
+        -webkit-animation: an-blink 9s linear 1s infinite;
+      }
+
+      @keyframes an-blink {
+        0% {
+          background: rgba(255, 255, 255, 0);
+        }
+
+        1.5% {
+          background: rgba(0, 0, 0, 0.1);
+        }
+
+        1.66% {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        1.7% {
+          background: rgba(255, 255, 255, 0);
+        }
+
+        2.66% {
+          background: rgba(0, 0, 0, 0.1);
+        }
+
+        2.9% {
+          background: rgba(255, 255, 255, 0);
+        }
+
+        3.2% {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        3.4% {
+          background: rgba(255, 255, 255, 0);
+        }
+
+        6.7% {
+          background: rgba(0, 0, 0, 0.1);
+        }
+
+        6.8% {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        7.2% {
+          background: rgba(255, 255, 255, 0);
+        }
+
+        36.7% {
+          background: rgba(0, 0, 0, 0.1);
+        }
+
+        36.8% {
+          background: rgba(255, 255, 255, 0.2);
+        }
+
+        37.2% {
+          background: rgba(255, 255, 255, 0);
+        }
+
+        53.5% {
+          background: rgba(0, 0, 0, 0.1);
+        }
+
+        53.66% {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        53.7% {
+          background: rgba(255, 255, 255, 0);
+        }
+
+        54.66% {
+          background: rgba(0, 0, 0, 0.1);
+        }
+
+        54.9% {
+          background: rgba(255, 255, 255, 0);
+        }
+
+        55.2% {
+          background: rgba(255, 255, 255, 0.3);
+        }
+
+        55.4% {
+          background: rgba(255, 255, 255, 0);
+        }
+
+        76.7% {
+          background: rgba(0, 0, 0, 0.1);
+        }
+
+        76.8% {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        77.2% {
+          background: rgba(255, 255, 255, 0);
+        }
+
+        100% {
+          background: rgba(255, 255, 255, 0);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="test"></div>
+    <div id="controls">
+      <p>Temperature: <span id="temperature">-</span></p>
+      <p>Condition: <span id="condition">-</span></p>
+      <p>Time of Day: <span id="timeOfDay">-</span></p>
+      <p>City: <span id="city">-</span></p>
+      <p>Country: <span id="country">-</span></p>
+      <br />
+      <div>
+        <input type="text" id="cityInput" placeholder="Enter city" />
+        <button onclick="searchWeather()">Search</button>
+      </div>
+      <br />
+
+      <button onclick="getUserLocation()">Use My Location</button>
+    </div>
+
+    <div class="wrapp-hero">
+      <canvas id="canvas"></canvas>
+      <div class="left-side"></div>
+
+      <div class="parent_right">
+        <div class="offer">
+          <div class="offer-content">
+            <div class="line-0">250 RUNDE</div>
+            <div class="line-4">GRATIS</div>
+            <div class="line-2">SHINING CROWN</div>
+          </div>
+          <div class="line-6">
+            <div class="top">COD BONUS</div>
+            <div class="bottom">250STERO</div>
+          </div>
+
+          <div class="_btn-container">
+            <a href="#" class="desktop cta-button">ÎNREGISTREAZĂ-TE</a>
+          </div>
+        </div>
+
+        <a href="#" class="steps-section">
+          <div class="steps-wrapper">
+            <div class="step">
+              <div class="step-block">
+                <div class="step-circle">
+                  <div class="icon-1"></div>
+                </div>
+                <div class="steps-parent">
+                  <div class="step-heading">ÎNREGISTREAZĂ-TE</div>
+                  <div class="step-text">
+                    Creează un cont pe <br />
+                    <span style="color: #fff">NetBet Cazino</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-block">
+                <div class="step-circle">
+                  <div class="icon-2"></div>
+                </div>
+                <div class="steps-parent">
+                  <div class="step-heading">VALIDEAZĂ CONTUL</div>
+                  <div class="step-text">
+                    Aşteaptă verificarea <br />
+                    <span style="color: #fff">documentelor</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-block">
+                <div class="step-circle">
+                  <div class="icon-3"></div>
+                </div>
+                <div class="steps-parent">
+                  <div class="step-heading">REVENDICĂ BONUSUL</div>
+                  <div class="step-text">
+                    Accesează Casieria şi <br />
+                    <span style="color: #fff">joacă Rundele Gratuite</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <style>
+          .steps-section {
+            display: block;
+            padding: 0em 0 0 0.5em;
+            text-decoration: none;
+            text-align: center;
+            width: 100%;
+            margin: 1.1em auto 0;
+            font-size: 1.9vh;
+          }
+
+          .steps-section .steps-wrapper {
+            display: flex;
+            text-decoration: none;
+            width: 100%;
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr;
+            grid-row-gap: 1em;
+            place-items: start;
+            place-content: center;
+          }
+
+          .step-block {
+            display: flex;
+            justify-content: center;
+            align-items: start;
+            flex-direction: row;
+            column-gap: 10px;
+          }
+
+          .steps-parent {
+            text-align: start;
+          }
+
+          .steps-section .steps-wrapper .step .step-circle {
+            width: 2.5em;
+            height: 2.5em;
+            background: linear-gradient(135deg, #db2129, #f12630);
+            border-radius: 4em;
+          }
+
+          .steps-section .steps-wrapper .step .step-circle > div {
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-position: center;
+          }
+
+          .steps-section .steps-wrapper .step .step-circle .icon-1 {
+            /* background-image: url("/lp-asset/shared/netbet/steps-icons/register.svg"); */
+          }
+
+          .steps-section .steps-wrapper .step .step-circle .icon-2 {
+            /* background-image: url("/lp-asset/shared/netbet/steps-icons/deposit.svg"); */
+          }
+
+          .steps-section .steps-wrapper .step .step-circle .icon-3 {
+            /* background-image: url("/lp-asset/shared/netbet/steps-icons/play.svg"); */
+          }
+
+          .steps-section .steps-wrapper .step .step-circle .icon-1 {
+            background-size: 100%;
+          }
+
+          .step-heading {
+            color: var(--color_white) !important;
+            font-size: 1em;
+            padding-bottom: 0.1em;
+            font-family: "montBold";
+          }
+
+          .steps-section .steps-wrapper .step .step-circle .icon-2,
+          .steps-section .steps-wrapper .step .step-circle .icon-3 {
+            background-size: 60%;
+            background-repeat: no-repeat;
+          }
+
+          .steps-section .steps-wrapper .step .step-circle:hover {
+            background: linear-gradient(135deg, #f12630, #db2129);
+          }
+
+          .steps-section .steps-wrapper .step .step-text {
+            color: var(--color_blue);
+            font-size: 0.8em;
+            margin-top: -0.1em;
+            font-family: "montSemiBold";
+            letter-spacing: -0.2px;
+          }
+
+          .step-text span {
+            font-weight: bold;
+          }
+
+          @media (min-width: 991px) {
+            .step-heading {
+              font-size: 1.1em;
+            }
+
+            .steps-section .steps-wrapper .step .step-text {
+              font-size: 0.9em;
+              text-align: start;
+            }
+          }
+
+          @media (orientation: portrait) {
+            .steps-section .steps-wrapper {
+              grid-template-columns: 1fr 1fr 1fr;
+              grid-template-rows: 1fr;
+            }
+          }
+
+          @media (max-width: 991px) {
+            .steps-section .steps-wrapper {
+              grid-template-columns: 1fr 1fr 1fr;
+              grid-template-rows: 1fr;
+            }
+
+            .steps-section {
+              font-size: 1.2vh;
+            }
+
+            .step-heading {
+              font-size: 0.9em;
+              text-align: center;
+            }
+
+            .steps-section .steps-wrapper .step .step-text {
+              font-size: 0.9em;
+              text-align: center;
+            }
+
+            .step-block {
+              column-gap: 4px;
+            }
+
+            .steps-section .steps-wrapper .step .step-circle {
+              width: 2em;
+              height: 2em;
+            }
+
+            .step-block {
+              flex-direction: column;
+              row-gap: 8px;
+            }
+
+            .steps-section .steps-wrapper .step .step-circle {
+              width: 3em;
+              height: 3em;
+              align-self: center;
+            }
+          }
+        </style>
+      </div>
+    </div>
+
+    <script src="./src/main.js"></script>
+  </body>
+</html>

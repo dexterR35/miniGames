@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Weather Widget</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      transition: background 0.5s ease;
+      background: linear-gradient(to bottom, #124869, #a5a5a5); /* Default day background */
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url(./png/bg-desktop-new.jpg);
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      z-index: -1;
+    }
+    .weather-widget {
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      width: 250px;
+      z-index: 10;
+    }
+    .temperature {
+      font-size: 2em;
+    }
+    .effect {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 5;
+    }
+    /* Snow effect */
+    .snow {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: white;
+      opacity: 0.8;
+      border-radius: 50%;
+      animation: fall linear infinite;
+    }
+    /* Rain effect */
+    .raindrop {
+      position: absolute;
+      width: 2px;
+      height: 15px;
+      background: lightblue;
+      opacity: 0.5;
+      animation: fall linear infinite;
+    }
+    /* Sunlight effect */
+    .sunlight {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255, 255, 100, 0.3), transparent 70%);
+      transform: translate(-50%, -50%);
+      animation: pulse 3s ease-in-out infinite;
+    }
+    /* Keyframes for falling effects */
+    @keyframes fall {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(100vh); }
+    }
+    /* Keyframes for pulsing sunlight */
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <div class="weather-widget" id="weatherWidget">
+    <h2>Weather</h2>
+    <input type="text" id="cityInput" placeholder="Enter city name" style="margin-bottom: 10px;">
+    <button onclick="searchWeather()">Search</button>
+    <div class="temperature" id="temperature"></div>
+    <div class="condition" id="condition"></div>
+    <div class="time-of-day" id="timeOfDay"></div>
+    <div class="details" id="details"></div>
+    <div class="country" id="country"></div>
+    <div class="city" id="city"></div>
+  </div>
+  <div class="effect" id="weatherEffect"></div>
+
+  <script>
+    const apiKey = "f0d25897d49d448da8482126241211";
+
+    function getUserLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        getWeather(`${latitude},${longitude}`);
+      },
+      error => {
+        if (error.code === error.PERMISSION_DENIED) {
+          alert("Location access denied. Please enter a city name.");
+        } else {
+          alert("Unable to retrieve location. Please enter a city name.");
+        }
+      }
+    );
+  } else {
+    alert("Geolocation not supported. Please enter a city name.");
+  }
+}
+
+    function searchWeather() {
+      const city = $('#cityInput').val().trim();
+      if (city) {
+        getWeather(city);
+      } else {
+        alert("Please enter a city name.");
+      }
+    }
+
+    function getWeather(query) {
+      $.ajax({
+        url: `https://api.weatherapi.com/v1/current.json`,
+        data: { key: apiKey, q: query },
+        method: "GET",
+        success: function(data) {
+          const temperature = data.current.temp_c;
+          const weatherCondition = data.current.condition.text;
+          const isDaytime = data.current.is_day === 1;
+          const localTime = data.location.localtime;
+          const weatherCode = data.current.condition.code;
+          console.log("Weather Code:", weatherCode);
+          console.log("Weather Code:", data);
+          console.log("Weather Code:", data.location.name);
+          console.log("Weather Code:", data.location.country);
+          console.log("Weather Code:", data.location.region);
+          console.log("localTime:", localTime);
+          $('#temperature').text(`${temperature.toFixed(1)}°C`);
+          $('#condition').text(weatherCondition);
+          $('#timeOfDay').text(isDaytime ? "Day" : "Night");
+          $('#country').text(data.location.country);
+          $('#city').text(data.location.region);
+          updateBackground(weatherCode, isDaytime);
+        },
+        error: function() {
+          $('#temperature').text("Error fetching data");
+          $('#condition').text("");
+          $('#timeOfDay').text("");
+          $('#details').text("");
+        }
+      });
+    }
+
+    function updateBackground(code, isDaytime) {
+      const body = $("body");
+      const effect = $("#weatherEffect");
+      // Clear previous effects
+      effect.empty();
+      body.css("background", isDaytime ? "linear-gradient(to bottom, #124869, #fff)" : "linear-gradient(to bottom, #2c3e50, #34495e)");
+      // Weather Effects
+      if ([1063, 1150, 1153, 1180, 1183, 1186, 1189, 1192, 1195, 1240].includes(code)) {
+        // Rain effect
+        for (let i = 0; i < 100; i++) {
+          const raindrop = $('<div class="raindrop"></div>');
+          raindrop.css({
+            left: `${Math.random() * 100}vw`,
+            animationDuration: `${Math.random() * 1 + 0.5}s`,
+            animationDelay: `${Math.random() * 2}s`
+          });
+          effect.append(raindrop);
+        }
+      } else if ([1114, 1117, 1210, 1213, 1216, 1219, 1222, 1225, 1255, 1258].includes(code)) {
+        // Snow effect
+        for (let i = 0; i < 100; i++) {
+          const snowflake = $('<div class="snow"></div>');
+          snowflake.css({
+            left: `${Math.random() * 100}vw`,
+            animationDuration: `${Math.random() * 5 + 3}s`,
+            animationDelay: `${Math.random() * 5}s`
+          });
+          effect.append(snowflake);
+        }
+      } else if (isDaytime) {
+        // Sunlight effect
+        const sunlight = $('<div class="sunlight"></div>');
+        effect.append(sunlight);
+      } else {
+        // Moonlight effect for nighttime
+        const moonlight = $('<div class="moonlight"></div>');
+        effect.append(moonlight);
+      }
+    }
+
+    $(document).ready(function() {
+      getUserLocation();
+    });
+  </script>
+</body>
+</html>
+
+
+
+
