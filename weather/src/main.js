@@ -2,7 +2,7 @@
 
 // Global Variables and Settings
 const apiKey = "f0d25897d49d448da8482126241211";
-
+const isMobile = window.innerWidth <= 768;
 const options = {
   precipitation: null, // "rain" or "snow", or null for no precipitation
   intensity: "light",
@@ -12,54 +12,55 @@ const options = {
 const intensitySettings = {
   rain: {
     light: {
-      maxParticles: 400,
-      density: 0.7,
-      speed: 20,
+      maxParticles: isMobile ? 200 : 400, // Reduce max particles for mobile
+      density: isMobile ? 0.4 : 0.7,
+      speed: 15, // Slightly slower on mobile
       wind: -1,
+      dropSize: 8,
+      dropWidth: 1.5,
+    },
+    moderate: {
+      maxParticles: isMobile ? 350 : 700,
+      density: isMobile ? 0.5 : 0.7,
+      speed: 25,
+      wind: 2,
       dropSize: 10,
       dropWidth: 2,
     },
-    moderate: {
-      maxParticles: 700,
-      density: 0.7,
-      speed: 35,
-      wind: 2,
-      dropSize: 15,
-      dropWidth: 2,
-    },
     heavy: {
-      maxParticles: 1200,
-      density: 1,
-      speed: 50,
+      maxParticles: isMobile ? 600 : 1200,
+      density: isMobile ? 0.8 : 1,
+      speed: 40,
       wind: -4,
-      dropSize: 15,
+      dropSize: 12,
       dropWidth: 2,
     },
   },
   snow: {
     light: {
-      maxParticles: 500,
-      density: 0.3,
-      speed: 20,
+      maxParticles: isMobile ? 300 : 500,
+      density: isMobile ? 0.2 : 0.3,
+      speed: 15,
       wind: -1,
-      snowSize: 4,
+      snowSize: 3,
     },
     moderate: {
-      maxParticles: 700,
-      density: 0.7,
-      speed: 35,
-      wind: -3,
+      maxParticles: isMobile ? 500 : 700,
+      density: isMobile ? 0.4 : 0.7,
+      speed: 25,
+      wind: -2,
       snowSize: 4,
     },
     heavy: {
-      maxParticles: 1000,
-      density: 1.4,
-      speed: 50,
-      wind: 6,
+      maxParticles: isMobile ? 800 : 1000,
+      density: isMobile ? 0.9 : 1.4,
+      speed: 35,
+      wind: 4,
       snowSize: 5,
     },
   },
 };
+
 
 const oCanvas = document.getElementById("canvas");
 const oCanvasCtx = oCanvas.getContext("2d");
@@ -72,7 +73,8 @@ const requestAnimFrame = (() =>
   window.mozRequestAnimationFrame ||
   window.oRequestAnimationFrame ||
   window.msRequestAnimationFrame ||
-  ((callback) => setTimeout(callback, 1000 / 60)))();
+  ((callback) =>
+    setTimeout(callback, isMobile ? 1000 / 30 : 1000 / 60)))(); 
 
 const resizeCanvas = () => {
   oSize.w = oCanvas.width = window.innerWidth;
@@ -83,6 +85,9 @@ const resizeCanvas = () => {
       particle.x = Math.random() * oSize.w;
       particle.y = Math.random() * oSize.h;
     });
+    if (isMobile) {
+      options.easing = 0.9; // Smoother movement on mobile
+    }
   }
 };
 
@@ -101,8 +106,10 @@ class Precipitation {
 
     const settings =
       intensitySettings[options.precipitation][options.intensity];
-    const newParticles = Math.ceil(settings.density * 5);
-
+    const newParticles = isMobile
+      ? Math.ceil(settings.density * 2) // Fewer particles on mobile
+      : Math.ceil(settings.density * 5);
+  
     for (let i = 0; i < newParticles; i++) {
       if (
         this.particles.length < settings.maxParticles &&

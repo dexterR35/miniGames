@@ -7,6 +7,10 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
 
+<!-- TrustBox script -->
+<script type="text/javascript" src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" async></script>
+<!-- End TrustBox script -->
+
     <title>Document</title>
     <style>
       * {
@@ -301,6 +305,28 @@
           background: rgba(255, 255, 255, 0);
         }
       }
+      .trustpilot-widget {
+        z-index: 2121;
+      }
+      .dark .tp-logo__text {
+        fill: #fff;
+      }
+      .tp-logo__text {
+        fill: white !important;
+        color: white;
+      }
+      #tp-widget-logo {
+      background: red !important;
+      }
+      .tp-widget-businessinfo__trustscore, .tp-widget-businessinfo__total {
+        color: white !important;
+      }
+      .trustpilotLogo-f5e7kdireb4 {
+        color: white !important;
+      }
+      span {
+        color: white !important;
+      }
     </style>
   </head>
 
@@ -322,6 +348,18 @@
       <button onclick="getUserLocation()">Use My Location</button>
     </div>
 
+<!-- TrustBox widget - Mini -->
+ <div class="container">
+
+<div class="trustpilot-widget" data-locale="ro-RO" data-template-id="53aa8807dec7e10d38f59f32" data-businessunit-id="582ecd580000ff000597b212" data-style-height="150px" data-style-width="100%" data-theme="dark" style="color: white;">
+  <a href="https://uk.trustpilot.com/review/netbet.ro" target="_blank" rel="noopener" style="color: white;">Trustpilot</a>
+  </div>
+</div>
+  <!-- End TrustBox widget -->
+  <style>
+    
+
+  </style>
     <div class="wrapp-hero">
       <canvas id="canvas"></canvas>
       <div class="left-side"></div>
