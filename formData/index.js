@@ -45,8 +45,9 @@ const storage = getStorage(app);
 var table;
 
 function generateDataTable(user) {
-  console.log(user.destinatar_nume);
+  // console.log(user.destinatar_nume);
   const tableAHtml = `<tr>
+  <td>${user.playerId}</td>
   <td>${user.destinatar_nume}</td>
   <td>${user.destinatar_prenume}</td>
   <td>${user.destinatar_telefon}</td>
@@ -58,8 +59,8 @@ function generateDataTable(user) {
   <td>${user.destinatar_scara}</td>
   <td>${user.destinatar_etaj}</td>
   <td>${user.destinatar_apartament}</td>
-  <td>${user.destinatar_userName}</td>
   <td>${user.destinatar_codpostal}</td>
+  <td>${user.destinatar_userName}</td>
 </tr>`;
   // console.log(user.select_banks)
   // Append the HTML to the table
@@ -67,7 +68,7 @@ function generateDataTable(user) {
 }
 
 async function fetchFirestoreData() {
-  const usersRef = collection(db, "euro_2024_premii");
+  const usersRef = collection(db, "batalia_2024_premii");
   const querySnapshot = await getDocs(usersRef);
 
   // Initialize the DataTable if it doesn't exist
