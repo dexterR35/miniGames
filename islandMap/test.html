@@ -1,163 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Prize Map</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #a2c8ff;
+      overflow: hidden;
+    }
+
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      z-index: 2;
+    }
+
+    .modal button {
+      margin-top: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="canvas-container">
+  <canvas id="canvas"></canvas>
+</div>
+<div id="prizeModal" class="modal">
+  <p id="prizeText"></p>
+  <button id="claimPrizeBtn">Claim Prize</button>
+  <button id="closeModal">Close</button>
+</div>
+
+<script>
 document.addEventListener("DOMContentLoaded", function () {
-  const mapContainer = document.getElementById("map");
+  const canvasContainer = document.querySelector(".canvas-container");
   const prizeModal = document.getElementById("prizeModal");
   const closeModal = document.getElementById("closeModal");
   const prizeText = document.getElementById("prizeText");
   const claimPrizeBtn = document.getElementById("claimPrizeBtn");
 
-  // Current Date for calculation
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth(); // 0-based index (January is 0)
-  const currentDay = currentDate.getDate(); // 1-based day
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
 
-  // Prize pool for each day
+  // Set canvas to full screen
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentDay = currentDate.getDate();
+
   const prizes = {
     1: "Prize for day 1",
     2: "Prize for day 2",
     3: "Prize for day 3",
     4: "Prize for day 4",
     5: "Prize for day 5",
-    // Add more prizes for other days as needed
   };
 
-  // Define different snake path parameters for each month
   const snakePathParameters = [
-    { amplitude: 20, frequency: 3, yBase: 50 }, // January
-    { amplitude: 30, frequency: 4, yBase: 40 }, // February
-    { amplitude: 25, frequency: 5, yBase: 55 }, // March
-    { amplitude: 35, frequency: 2, yBase: 45 }, // April
-    { amplitude: 40, frequency: 6, yBase: 60 }, // May
+    { amplitude: 30, frequency: 3, yBase: 50 },
+    { amplitude: 25, frequency: 2, yBase: 55 },
+    { amplitude: 35, frequency: 4, yBase: 60 },
+    { amplitude: 45, frequency: 3, yBase: 65 },
+    { amplitude: 40, frequency: 5, yBase: 70 },
   ];
 
-  // Function to generate the map (4 islands for 4 months)
   function generateMap() {
-    const months = ["January", "February", "March", "April", "May"];
-    months.forEach((month, index) => {
-      const island = document.createElement("div");
-      island.textContent = month;
-      island.dataset.month = index;
-      island.addEventListener("click", () => openCalendar(index));
-      island.classList.add(`${month}`);
-      if (index !== currentMonth) {
-        island.classList.add("disabled");
-      } else {
-        island.classList.remove("disabled");
-      }
+    const months = ["January", "February", "March", "April"];
+    const islandWidth = 150;
+    const islandHeight = 150;
+    const margin = 50;
 
-      mapContainer.appendChild(island);
+    months.forEach((month, index) => {
+      const x = margin + (index * (islandWidth + margin));
+      const y = canvas.height - islandHeight - margin;
+
+      ctx.fillStyle = index === currentMonth ? "lightgreen" : "gray";
+      ctx.fillRect(x, y, islandWidth, islandHeight);
+
+      ctx.fillStyle = "black";
+      ctx.font = "20px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(month, x + islandWidth / 2, y + islandHeight / 2);
+
+      canvas.addEventListener("click", function (event) {
+        const rect = canvas.getBoundingClientRect();
+        const xPos = event.clientX - rect.left;
+        const yPos = event.clientY - rect.top;
+
+        if (xPos >= x && xPos <= x + islandWidth && yPos >= y && yPos <= y + islandHeight) {
+          openCalendar(index);
+        }
+      });
     });
   }
 
-  // Function to generate the calendar with a snake-like path
   function openCalendar(month) {
-    const calendarWrapper = document.createElement("div");
-    calendarWrapper.classList.add("calendar-wrapper");
+    // Clear existing canvas
+    canvasContainer.innerHTML = "";
+    const newCanvas = document.createElement("canvas");
+    newCanvas.width = window.innerWidth;
+    newCanvas.height = window.innerHeight;
+    canvasContainer.appendChild(newCanvas);
+    const newCtx = newCanvas.getContext("2d");
 
-    const calendarContainer = document.createElement("div");
-    calendarContainer.id = "calendar";
-
-    const closeButton = document.createElement("button");
-    closeButton.textContent = "Close Calendar";
-    closeButton.addEventListener("click", () => {
-      mapContainer.innerHTML = ""; // Clear the current calendar view
-      generateMap(); // Re-generate the map view
-    });
-
-    const daysInMonth = new Date(2025, month + 1, 0).getDate(); // Number of days in the selected month
-
-    // Get the parameters for the current month
+    const daysInMonth = new Date(2025, month + 1, 0).getDate();
     const { amplitude, frequency, yBase } = snakePathParameters[month];
 
     const positions = [];
-
-    // Calculate coordinates based on a sinusoidal function
     for (let i = 0; i < daysInMonth; i++) {
-      const progress = i / (daysInMonth - 1); // Progress on the X axis (0 to 1)
-      const x = 5 + progress * 90; // Distribute evenly on the X axis
-      const y = yBase + Math.sin(progress * Math.PI * frequency) * amplitude; // Sinusoidal curve on the Y axis
+      const progress = i / (daysInMonth + 1);
+      const x = (i * (window.innerWidth - 100)) / (daysInMonth - 1) + 50;
+      const y = yBase + Math.sin(progress * Math.PI * frequency) * amplitude;
       positions.push({ x, y });
     }
 
-    // Create the days based on the coordinates
-  // Create the days based on the coordinates
-// Create the days based on the coordinates
-positions.forEach((pos, index) => {
-  const dayDiv = document.createElement("div");
-  calendarContainer.appendChild(dayDiv);
+    positions.forEach((pos, index) => {
+      const daySize = 30;
+      newCtx.beginPath();
+      newCtx.arc(pos.x, pos.y, daySize, 0, 2 * Math.PI);
+      newCtx.fillStyle = (month === currentMonth && index === currentDay - 1) ? "purple" : "gold";
+      newCtx.fill();
 
-  // Styles for each day
-  dayDiv.style.position = "absolute";
-  dayDiv.style.width = "40px";
-  dayDiv.style.height = "40px";
-  dayDiv.style.borderRadius = "50%";
-  dayDiv.style.display = "flex";
-  dayDiv.style.justifyContent = "center";
-  dayDiv.style.alignItems = "center";
-  dayDiv.style.fontWeight = "bold";
-  dayDiv.style.fontSize = "12px";
-  dayDiv.style.textShadow = "1px 1px 2px white";
+      if (month === currentMonth && index === currentDay - 1) {
+        newCtx.fillStyle = "white";
+        newCtx.fillText(index + 1, pos.x, pos.y);
+        newCanvas.addEventListener("click", function (event) {
+          const rect = newCanvas.getBoundingClientRect();
+          const xPos = event.clientX - rect.left;
+          const yPos = event.clientY - rect.top;
 
-  // Position each day based on the coordinates
-  dayDiv.style.left = pos.x + "%";
-  dayDiv.style.top = pos.y + "%";
-
-  // Customize start, finish, and intermediate days
-  if (index === 0) {
-    dayDiv.style.backgroundColor = "green";
-    dayDiv.style.color = "white";
-    dayDiv.textContent = "Start";
-  } else if (index === positions.length - 1) {
-    dayDiv.style.backgroundColor = "red";
-    dayDiv.style.color = "white";
-    dayDiv.textContent = "Finish";
-  } else if (month < currentMonth || (month === currentMonth && index < currentDay)) {
-    dayDiv.classList.add("before");
-    dayDiv.style.backgroundColor = "gray";
-    dayDiv.style.color = "white";
-    dayDiv.textContent = index + 1;
-  } else if (month === currentMonth && index === currentDay - 1) {
-    dayDiv.classList.add("current");
-    dayDiv.style.backgroundColor = "blue";
-    dayDiv.style.color = "white";
-    dayDiv.textContent = index + 1;
-    
-    // Attach the click event for the current day
-    dayDiv.addEventListener("click", () => {
-      openPrizeModal(index + 1); // Open prize modal on click of the current day
+          const distance = Math.sqrt(Math.pow(xPos - pos.x, 2) + Math.pow(yPos - pos.y, 2));
+          if (distance < daySize) {
+            openPrizeModal(index + 1);
+          }
+        });
+      }
     });
-  } else {
-    dayDiv.classList.add("next");
-    dayDiv.style.backgroundColor = "gold";
-    dayDiv.style.color = "black";
-    dayDiv.textContent = index + 1;
-  }
-});
-
-
-
-    calendarWrapper.appendChild(calendarContainer);
-    calendarWrapper.appendChild(closeButton);
-
-    mapContainer.innerHTML = "";
-    mapContainer.appendChild(calendarWrapper);
   }
 
-  // Function to open the prize modal
   function openPrizeModal(day) {
-    prizeText.textContent = prizes[day] || "You won a random prize!";
-    prizeModal.style.display = "flex"; // Show the prize modal
+    prizeText.textContent = prizes[day] || `You won a random prize! ${day}`;
+    prizeModal.style.display = "flex";
   }
-  
-  // Close the prize modal
+
   closeModal.addEventListener("click", () => {
-    prizeModal.style.display = "none"; // Hide the prize modal
+    prizeModal.style.display = "none";
   });
-  
-  // Claim prize button action
+
   claimPrizeBtn.addEventListener("click", () => {
     alert("Prize Claimed!");
-    prizeModal.style.display = "none"; // Hide the prize modal after claiming
+    prizeModal.style.display = "none";
   });
-  // Generate the initial map when the page loads
+
   generateMap();
 });
+</script>
+
+</body>
+</html>

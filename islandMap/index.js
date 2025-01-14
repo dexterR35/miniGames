@@ -10,41 +10,54 @@ document.addEventListener("DOMContentLoaded", function () {
   const currentMonth = currentDate.getMonth(); // 0-based index (January is 0)
   const currentDay = currentDate.getDate(); // 1-based day
 
-  // Prize pool for each day
-  const prizes = {
-    1: "Prize for day 1",
-    2: "Prize for day 2",
-    3: "Prize for day 3",
-    4: "Prize for day 4",
-    5: "Prize for day 5",
-    // Add more prizes for other days as needed
-  };
+  // The number of months after the current month you want to show
+  const monthsAfter = 4; // You can change this to show more or fewer months
 
-  const snakePathParameters = [
-    { amplitude: 20, frequency: 3, yBase: 50 }, // January
-    { amplitude: 20, frequency: 2, yBase: 48 }, // February
-    { amplitude: 25, frequency: 5, yBase: 50 }, // March
-    { amplitude: 35, frequency: 2, yBase: 45 }, // April
-    { amplitude: 40, frequency: 6, yBase: 60 }, // May
-  ];
+  // Function to generate dynamic prizes
+  function generatePrizes() {
+    const prizes = {};
+    for (let i = 0; i <= monthsAfter; i++) {
+      const monthIndex = (currentMonth + i) % 12;
+      prizes[monthIndex] = `Prize for day ${i + 1} of month ${new Date(2025, monthIndex).toLocaleString('default', { month: 'long' })}`;
+    }
+    return prizes;
+  }
 
-  // Function to generate the map (4 islands for 4 months)
+  // Function to generate dynamic snake path parameters
+  function generateSnakePathParameters() {
+    const parameters = [];
+    for (let i = 0; i <= monthsAfter; i++) {
+      const monthIndex = (currentMonth + i) % 12;
+      parameters.push({
+        amplitude: 20 + Math.random() * 20, // Example: Random amplitude for visual effect
+        frequency: 2 + Math.random() * 3, // Example: Random frequency for sinusoidal curve
+        yBase: 40 + Math.random() * 20, // Example: Random y base
+      });
+    }
+    return parameters;
+  }
+
+  const prizes = generatePrizes(); // Dynamically generated prizes
+  const snakePathParameters = generateSnakePathParameters(); // Dynamically generated parameters
+
+  // Function to generate the map (current month and next 4 months)
   function generateMap() {
-    const months = ["January", "February", "March", "April"];
-    months.forEach((month, index) => {
+    for (let i = 0; i <= monthsAfter; i++) {
+      const monthIndex = (currentMonth + i) % 12; // Wrap around the months after December
+      const monthName = new Date(2025, monthIndex).toLocaleString('default', { month: 'long' });
       const island = document.createElement("div");
-      island.textContent = month;
-      island.dataset.month = index;
-      island.addEventListener("click", () => openCalendar(index));
-      island.classList.add(`${month}`);
-      if (index !== currentMonth) {
-        // Disable the island for future months (using JavaScript)
-        island.classList.add("disabled");
+      island.textContent = monthName;
+      island.dataset.month = monthIndex;
+      island.addEventListener("click", () => openCalendar(monthIndex));
+      island.classList.add(`${monthName}`);
+      
+      if (monthIndex < currentMonth) {
+        island.classList.add("disabled"); // Disable past months
       } else {
-        island.removeAttribute("disabled"); // Ensure current month is enabled
+        island.removeAttribute("disabled"); // Enable the current and future months
       }
       mapContainer.appendChild(island);
-    });
+    }
   }
 
   // Function to generate the calendar for a selected month
@@ -65,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     const daysInMonth = new Date(2025, month + 1, 0).getDate(); // Get number of days in the selected month
-    const { amplitude, frequency, yBase } = snakePathParameters[month]; // Get the parameters for the current month
+    const { amplitude, frequency, yBase } = snakePathParameters[month % snakePathParameters.length]; // Get the parameters for the current month
     
     // Create the days for the selected month dynamically
     const positions = [];
@@ -110,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
         dayDiv.style.backgroundColor = "gray";
         dayDiv.style.color = "white";
         dayDiv.textContent = index + 1;
-      }else if (month === currentMonth && index === currentDay) {
+      } else if (month === currentMonth && index === currentDay) {
         dayDiv.classList.add("current");
         dayDiv.style.backgroundColor = "purple";
         dayDiv.style.color = "white";
@@ -119,14 +132,13 @@ document.addEventListener("DOMContentLoaded", function () {
           console.log(`Clicked on day ${index + 1}`); // Debugging log
           openPrizeModal(index + 1); // Open prize modal on click of the current day
         });
-      }else if (month === currentMonth && index === currentDay - 1) {
+      } else if (month === currentMonth && index === currentDay - 1) {
         dayDiv.classList.add("current");
         dayDiv.style.backgroundColor = "blue";
         dayDiv.style.color = "white";
         dayDiv.textContent = index + 1;
 
         // Enable click only for the current day
-      
       } else {
         dayDiv.classList.add("next");
         dayDiv.style.backgroundColor = "gold";
