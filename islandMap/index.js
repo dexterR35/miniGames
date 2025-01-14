@@ -129,8 +129,8 @@ document.addEventListener("DOMContentLoaded", function () {
         dayDiv.style.color = "white";
         dayDiv.textContent = index + 1; 
         dayDiv.addEventListener("click", () => {
-          console.log(`Clicked on day ${index + 1}`); // Debugging log
-          openPrizeModal(index + 1); // Open prize modal on click of the current day
+          console.log(`Clicked on day ${index + 1}`); 
+          openPrizeModal(index + 1); 
         });
       } else if (month === currentMonth && index === currentDay - 1) {
         dayDiv.classList.add("current");
@@ -182,3 +182,20 @@ document.addEventListener("DOMContentLoaded", function () {
   // Generate the initial map when the page loads
   generateMap();
 });
+
+
+
+
+// https://www.shutterstock.com/image-vector/cartoon-game-icons-inventory-items-gui-2376637053
+// https://www.shutterstock.com/image-vector/pirate-trophy-cartoon-robbers-treasures-gems-2427355429
+//https://www.shutterstock.com/image-vector/game-map-many-levels-landscape-user-2216013179
+//https://www.shutterstock.com/image-vector/list-mobile-games-game-ui-kit-2280348893
+// https://www.shutterstock.com/image-vector/retro-show-signs-set-isolated-on-2450496243
+// https://www.shutterstock.com/image-vector/game-icon-bonus-items-illustration-collection-440578453
+//https://www.shutterstock.com/image-vector/level-ui-game-icons-casino-bonus-1927326095
+//https://www.shutterstock.com/image-vector/fantasy-game-icon-set-dragon-dungeon-2317370025
+// https://es.pinterest.com/pin/88946161377270044/
+// https://es.pinterest.com/pin/271553052519867047/
+// https://es.pinterest.com/pin/3237030972445431/
+// https://es.pinterest.com/pin/8022105581476562/
+// https://es.pinterest.com/pin/12525705200296663/
