@@ -1,6 +1,5 @@
 $(document).ready(function() {
 
-
 	var box = $(".box"),
 		orginal = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
 		temp = orginal,
@@ -14,9 +13,6 @@ $(document).ready(function() {
 		images = ["./AdobeStock_831312342.jpeg","https://preview.ibb.co/kWOEt6/minion.png","https://preview.ibb.co/e0Rv0m/ab.jpg"]
 		img = 0;
 
-
-
-
 	$('.me').css({"background-image" : 'url('+images[0]+')'});
 
 	$(".start").click(function() {
@@ -24,7 +20,6 @@ $(document).ready(function() {
 		$(".start").delay(100).slideUp(500);
 		$(".full").hide();
 		$(".pre_img").addClass("prevent_click");
-		
 		date1 = new Date();
 		Start();
 		return 0;
@@ -118,7 +113,7 @@ $(document).ready(function() {
 	
 	function getRandom(min, max) {
 			return Math.floor(Math.random() * (max - min + 1)) + min;
-		}
+	}
 	
 	function timeDifferece(){
 		var diff = date2 - date1;
@@ -127,18 +122,19 @@ $(document).ready(function() {
 		msec -= hh * 1000 * 60 * 60;
 	 	mm = Math.floor(msec / 1000 / 60); // Gives Minute
 		msec -= mm * 1000 * 60;
-		ss = Math.floor(msec / 1000);		// Gives Second
+		ss = Math.floor(msec / 1000);// Gives Second
 		msec -= ss * 1000;
 		return 0;
 	}
 
-
 	function changeBG(img){	
+
 		if(img != 3){
-		$('.me').css({
-			"background-image" : "url("+images[img]+")"
-		});
-		return
+
+			$('.me').css({
+				"background-image" : "url("+images[img]+")"
+			});
+			return
 		}
 		else
 			$('.me').css({"background-image" : "url("+upIMG+")"});
@@ -148,7 +144,7 @@ $(document).ready(function() {
 			img = $(this).attr("data-bid");
 			changeBG(img);
 
-		});
+	});
 	
 	function showScore(){
 		$('#min').html(mm);
@@ -185,7 +181,7 @@ $(document).ready(function() {
         readURL(this);
     });
 
-     function readURL(input) {
+    function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             
