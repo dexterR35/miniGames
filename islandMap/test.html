@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar with Prize</title>
+  <style>
+    /* Basic styles for calendar and map */
+    #map {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      margin: 20px;
+      gap: 10px;
+    }
+
+    #map div {
+      padding: 10px;
+      background-color: #3498db;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .calendar-wrapper {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      width: 300px;
+      margin: 20px auto;
+    }
+
+    .calendar-wrapper div {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #2ecc71;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .before {
+      background-color: #bdc3c7;
+    }
+
+    .next {
+      background-color: #f39c12;
+    }
+
+    .current {
+      background-color: #e74c3c;
+    }
+
+    #prizeModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+      background-color: white;
+      padding: 20px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    #prizeModal p {
+      margin-bottom: 10px;
+    }
+
+    #closeModal, #claimPrizeBtn {
+      padding: 5px 10px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #closeModal {
+      background-color: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <!-- Prize Modal -->
+  <div id="prizeModal">
+    <p id="prizeText">You won a random prize!</p>
+    <button id="claimPrizeBtn">Claim Prize</button>
+    <button id="closeModal">Close</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const mapContainer = document.getElementById("map");
+      const prizeModal = document.getElementById("prizeModal");
+      const closeModal = document.getElementById("closeModal");
+      const prizeText = document.getElementById("prizeText");
+      const claimPrizeBtn = document.getElementById("claimPrizeBtn");
+
+      // Current Date for calculation
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth(); // 0-based index (January is 0)
+      const currentDay = currentDate.getDate(); // 1-based day
+
+      // Prize pool for each day
+      const prizes = {
+        1: "Prize for day 1",
+        2: "Prize for day 2",
+        3: "Prize for day 3",
+        4: "Prize for day 4",
+        5: "Prize for day 5",
+        // Add more prizes for other days as needed
+      };
+
+      // Function to generate the map (4 islands for 4 months)
+      function generateMap() {
+        const months = ["January", "February", "March", "April"];
+        months.forEach((month, index) => {
+          const island = document.createElement("div");
+          island.textContent = month;
+          island.dataset.month = index;
+          island.addEventListener("click", () => openCalendar(index));
+          island.classList.add(`${month}`);
+          if (index !== currentMonth) {
+            // Disable the island for future months (using JavaScript)
+            island.style.opacity = 0.5; // Disable appearance for future months
+            island.style.pointerEvents = "none"; // Disable clicks
+          } else {
+            island.removeAttribute("disabled"); // Ensure current month is enabled
+          }
+
+          mapContainer.appendChild(island);
+        });
+      }
+
+      // Function to generate the calendar for a selected month
+      function openCalendar(month) {
+        const calendarWrapper = document.createElement("div");
+        calendarWrapper.classList.add("calendar-wrapper");
+
+        const daysInMonth = new Date(2025, month + 1, 0).getDate(); // Get number of days in the selected month
+
+        // Create the days for the selected month dynamically
+        for (let i = 1; i <= daysInMonth; i++) {
+          const dayDiv = document.createElement("div");
+          dayDiv.textContent = i;
+
+          if (month < currentMonth || (month === currentMonth && i < currentDay)) {
+            // Past days are disabled
+            dayDiv.classList.add("before");
+          } else if (month === currentMonth && i === currentDay) {
+            // Current day is active
+            dayDiv.classList.add("current");
+            dayDiv.addEventListener("click", () => openPrizeModal(i)); // Add click event for current day
+          } else {
+            // Future days are marked with a question mark (future)
+            dayDiv.textContent = `${i}?`;
+            dayDiv.classList.add("next");
+          }
+
+          calendarWrapper.appendChild(dayDiv);
+        }
+
+        // Clear the map and show the calendar inside the wrapper
+        mapContainer.innerHTML = "";
+        mapContainer.appendChild(calendarWrapper);
+      }
+
+      // Function to open the prize modal
+      function openPrizeModal(day) {
+        prizeText.textContent = prizes[day] || "You won a random prize!";
+        prizeModal.style.display = "flex"; // Show the prize modal
+      }
+
+      // Close the prize modal
+      closeModal.addEventListener("click", () => {
+        prizeModal.style.display = "none"; // Hide the prize modal
+      });
+
+      // Claim prize button action
+      claimPrizeBtn.addEventListener("click", () => {
+        alert("Prize Claimed!");
+        prizeModal.style.display = "none"; // Hide the prize modal after claiming
+      });
+
+      // Generate the initial map when the page loads
+      generateMap();
+    });
+  </script>
+</body>
+</html>
