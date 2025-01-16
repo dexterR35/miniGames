@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link rel="stylesheet" href="./style.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="master">
+      <!-- <div id="insertDiv">
+            <div class="main">
+                <div class="header"><h1>header</h1></div>
+                <div class="above">
+                  <p>oferta</p>
+                </div>
+                <div class="below"><p>below-fold</p></div>
+                <div class="tc"><p>T&C</p></div>
+                <div class="p-img">
+                  <h2>Title</h2>
+                  <div class="c-info">
+                      <p>active users <br> ~100k</p>
+                      <p>Points <br>200pct</p>
+                      <p>Bonus <br> 100FS</p>
+                      <p>info <br> !</p>
+                  </div>
+             
+                  <div class="c-img">
+                    <img src="./png/road.webp" alt="test" />
+                    <div class="checkpoint">1</div>
+            
+                  </div>
+                  <h3>smallT&C</h3>
+                </div>
+                <div class="footer"><p>Footer</p></div>
+            </div>
+        </div> -->
+      <div class="boxes">
+        <div class="box" data-id="1">island 1</div>
+        <div class="box" data-id="2">island 2</div>
+        <div class="box" data-id="3">island 3</div>
+        <div class="box" data-id="4">island 4</div>
+        <div class="box" data-id="5">island 5</div>
+      </div>
+
+      <div id="insertDiv"></div>
+    </div>
+
+    <script>
+      $(document).ready(function () {
+        // Define content for each box
+        const content = {
+          1: {
+            header: "Header for Box 1",
+            above: "Oferta for Box 1",
+            below: "Below content for Box 1",
+            tc: "Terms and Conditions for Box 1",
+            pImg: {
+              title: "Title for Box 1",
+              cInfo: [
+                { label: "Active Users", value: "~100k users" },
+                { label: "Points", value: "200 Points" },
+                { label: "Bonus", value: "50 FS" },
+                { label: "Info", value: "Info for Box 1" },
+              ],
+              imgSrc: "./png/road.webp",
+              checkpoint: "Checkpoint 1",
+              smallTC: "Small T&C for Box 1",
+            },
+            footer: "Footer for Box 1",
+          },
+          2: {
+            header: "Header for Box 2",
+            above: "Oferta for Box 2",
+            below: "Below content for Box 2",
+            tc: "Terms and Conditions for Box 2",
+            pImg: {
+              title: "Title for Box 2",
+              cInfo: [
+                { label: "Active Users", value: "~50k users" },
+                { label: "Points", value: "300 Points" },
+                { label: "Bonus", value: "100 FS" },
+                { label: "Info", value: "Info for Box 2" },
+              ],
+              imgSrc: "./png/road.webp",
+              checkpoint: "Checkpoint 2",
+              smallTC: "Small T&C for Box 2",
+            },
+            footer: "Footer for Box 2",
+          },
+          3: {
+            header: "Header for Box 3",
+            above: "Oferta for Box 3",
+            below: "Below content for Box 3",
+            tc: "Terms and Conditions for Box 3",
+            pImg: {
+              title: "Title for Box 3",
+              cInfo: [
+                { label: "Active Users", value: "~50k users" },
+                { label: "Points", value: "300 Points" },
+                { label: "Bonus", value: "100 FS" },
+                { label: "Info", value: "Info for Box 2" },
+              ],
+              imgSrc: "./png/road.webp",
+              checkpoint: "Checkpoint 3",
+              smallTC: "Small T&C for Box 3",
+            },
+            footer: "Footer for Box 3",
+          },
+          4: {
+            header: "Header for Box 4",
+            above: "Oferta for Box 4",
+            below: "Below content for Box 4",
+            tc: "Terms and Conditions for Box 4",
+            pImg: {
+              title: "Title for Box 4",
+              cInfo: [
+                { label: "Active Users", value: "~50k users" },
+                { label: "Points", value: "300 Points" },
+                { label: "Bonus", value: "100 FS" },
+                { label: "Info", value: "Info for Box 4" },
+              ],
+              imgSrc: "./png/road.webp",
+              checkpoint: "Checkpoint 4",
+              smallTC: "Small T&C for Box 4",
+            },
+            footer: "Footer for Box 2",
+          },
+          5: {
+            header: "Header for Box 5",
+            above: "Oferta for Box 5",
+            below: "Below content for Box 5",
+            tc: "Terms and Conditions for Box 5",
+            pImg: {
+              title: "Title for Box 5",
+              cInfo: [
+                { label: "Active Users", value: "~50k users" },
+                { label: "Points", value: "300 Points" },
+                { label: "Bonus", value: "100 FS" },
+                { label: "Info", value: "Info for Box 5" },
+              ],
+              imgSrc: "./png/road.webp",
+              checkpoint: "Checkpoint 5",
+              smallTC: "Small T&C for Box 5",
+            },
+            footer: "Footer for Box 5",
+          },
+          // Add more boxes as needed
+        };
+
+        // Handle box click event
+        $(".box").on("click", function () {
+          const boxId = $(this).data("id"); // Get the ID of the clicked box
+          const data = content[boxId]; // Fetch corresponding content from the object
+          $(".boxes").hide();
+          if (data) {
+            // Create the HTML content dynamically
+            const mainHtml = `
+                <div class="main">
+                    <div class="header"><h1>${data.header}</h1></div>
+                    <div class="above"><p>${data.above}</p></div>
+                    <div class="below"><p>${data.below}</p></div>
+                    <div class="tc"><p>${data.tc}</p></div>
+                    <div class="p-img">
+                        <h2>${data.pImg.title}</h2>
+                        <div class="c-info">
+                            ${data.pImg.cInfo
+                              .map(
+                                (info) =>
+                                  `<p>${info.label} <br> ${info.value}</p>`
+                              )
+                              .join("")}
+                        </div>
+                        <div class="c-img">
+                            <img src="${data.pImg.imgSrc}" alt="Image for ${
+              data.pImg.title
+            }" />
+                            <div class="checkpoint">${
+                              data.pImg.checkpoint
+                            }</div>
+                        </div>
+                        <h3>${data.pImg.smallTC}</h3>
+                    </div>
+                    <div class="footer"><p>${data.footer}</p></div>
+                </div>
+            `;
+
+            // Insert the generated HTML into #insertDiv
+            $("#insertDiv").html(mainHtml);
+          } else {
+            console.error("No content found for box:", boxId);
+            $(".boxex").show();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

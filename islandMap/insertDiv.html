@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Div</title>
+    <style>
+        #insertDiv {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #000;
+            background: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div id="insertDiv">Loading content...</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Define content for each box
+            const content = {
+                1: {
+                    header: "Header for Box 1",
+                    above: "Oferta for Box 1",
+                    below: "Below content for Box 1",
+                    tc: "Terms and Conditions for Box 1",
+                    pImg: {
+                        title: "Title for Box 1",
+                        cInfo: [
+                            { label: "Active Users", value: "~100k users" },
+                            { label: "Points", value: "200 Points" },
+                            { label: "Bonus", value: "50 FS" },
+                            { label: "Info", value: "Info for Box 1" },
+                        ],
+                        imgSrc: "./png/road1.webp",
+                        checkpoint: "Checkpoint 1",
+                        smallTC: "Small T&C for Box 1",
+                    },
+                    footer: "Footer for Box 1",
+                },
+                2: {
+                    header: "Header for Box 2",
+                    above: "Oferta for Box 2",
+                    below: "Below content for Box 2",
+                    tc: "Terms and Conditions for Box 2",
+                    pImg: {
+                        title: "Title for Box 2",
+                        cInfo: [
+                            { label: "Active Users", value: "~50k users" },
+                            { label: "Points", value: "300 Points" },
+                            { label: "Bonus", value: "100 FS" },
+                            { label: "Info", value: "Info for Box 2" },
+                        ],
+                        imgSrc: "./png/road2.webp",
+                        checkpoint: "Checkpoint 2",
+                        smallTC: "Small T&C for Box 2",
+                    },
+                    footer: "Footer for Box 2",
+                },
+                // Add more boxes as needed
+            };
+
+            // Extract `boxId` from query string
+            const params = new URLSearchParams(window.location.search);
+            const boxId = params.get("boxId");
+
+            if (boxId && content[boxId]) {
+                const data = content[boxId];
+
+                // Generate the HTML dynamically
+                const mainHtml = `
+                    <div class="main">
+                        <div class="header"><h1>${data.header}</h1></div>
+                        <div class="above"><p>${data.above}</p></div>
+                        <div class="below"><p>${data.below}</p></div>
+                        <div class="tc"><p>${data.tc}</p></div>
+                        <div class="p-img">
+                            <h2>${data.pImg.title}</h2>
+                            <div class="c-info">
+                                ${data.pImg.cInfo.map(info => `<p>${info.label} <br> ${info.value}</p>`).join("")}
+                            </div>
+                            <div class="c-img">
+                                <img src="${data.pImg.imgSrc}" alt="Image for ${data.pImg.title}" />
+                                <div class="checkpoint">${data.pImg.checkpoint}</div>
+                            </div>
+                            <h3>${data.pImg.smallTC}</h3>
+                        </div>
+                        <div class="footer"><p>${data.footer}</p></div>
+                    </div>
+                `;
+
+                // Populate `#insertDiv`
+                $("#insertDiv").html(mainHtml);
+            } else {
+                $("#insertDiv").html("<p>Invalid box ID or content not found.</p>");
+            }
+        });
+    </script>
+</body>
+</html>

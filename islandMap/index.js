@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const calendarContainer = document.createElement("div");
     calendarContainer.id = "calendar";
     const closeButton = document.createElement("button");
-    closeButton.textContent = "Close Calendar";
+    closeButton.textContent = "Close map";
 
     // Attach event to close the calendar
     closeButton.addEventListener("click", () => {
