@@ -4,11 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeModal = document.getElementById("closeModal");
   const prizeText = document.getElementById("prizeText");
   const claimPrizeBtn = document.getElementById("claimPrizeBtn");
-  const userNameInput = document.getElementById("userNameInput"); // Input for userName
-  const userIdInput = document.getElementById("userIdInput"); // Input for userId
-  const submitUserInfoBtn = document.getElementById("submitUserInfoBtn"); // Submit button
-
-  let currentUser = null; // Store the current user
 
   // Configuration
   const baseDate = new Date(); // Set your base date here
@@ -115,12 +110,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const openPrizeModal = async (year, month, day) => {
     const dateKey = generateDateKey(year, month, day);
 
-    // Check if the user has already claimed the prize for this day
-    if (currentUser && currentUser.claimedPrizes && currentUser.claimedPrizes[dateKey]) {
-      alert("You've already claimed this prize!");
-      return;
-    }
-
     try {
       const prize = await getPrize(dateKey);
       prizeText.textContent = prize;
@@ -145,43 +134,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   };
 
-  // Claim prize action
+  // Claim prize action (no user information check)
   claimPrizeBtn.addEventListener("click", async () => {
-    if (currentUser) {
-      const dateKey = generateDateKey(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
-      if (!currentUser.claimedPrizes) {
-        currentUser.claimedPrizes = {};
-      }
-      currentUser.claimedPrizes[dateKey] = true;
-      localStorage.setItem(currentUser.userId, JSON.stringify(currentUser)); // Save to localStorage
-
-      alert("Prize Claimed!");
-      prizeModal.style.display = "none";
-    } else {
-      alert("Please enter your name and ID.");
-    }
+    const dateKey = generateDateKey(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+    alert("Prize Claimed!");
+    prizeModal.style.display = "none";
   });
 
   // Close the prize modal
   closeModal.addEventListener("click", () => {
     prizeModal.style.display = "none";
-  });
-
-  // Handle user information submission
-  submitUserInfoBtn.addEventListener("click", () => {
-    const userName = userNameInput.value;
-    const userId = userIdInput.value;
-
-    if (userName && userId) {
-      currentUser = {
-        userName,
-        userId,
-        claimedPrizes: JSON.parse(localStorage.getItem(userId))?.claimedPrizes || {}
-      };
-      alert("User info saved!");
-    } else {
-      alert("Please enter both name and ID.");
-    }
   });
 
   // Initialize the application
