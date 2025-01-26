@@ -75,36 +75,50 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeButton = document.createElement("button");
     closeButton.textContent = "Close map";
     closeButton.addEventListener("click", async () => {
-        mapContainer.innerHTML = "";
-        await generateMap();
+      mapContainer.innerHTML = "";
+      await generateMap();
     });
-
+  
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const currentYear = baseDate.getFullYear();
     const currentMonth = baseDate.getMonth();
     const currentDay = baseDate.getDate();
-
+    const currentDate = new Date(currentYear, currentMonth, currentDay);
+  
     for (let dayIndex = 0; dayIndex < daysInMonth; dayIndex++) {
-        const dayDiv = document.createElement("div");
-        const day = dayIndex + 1;
-        dayDiv.textContent = day;
-        dayDiv.dataset.index = dayIndex;
-        dayDiv.classList.add("_d");
-
-        if (year === currentYear && month === currentMonth && day === currentDay) {
-            // Add click listener only for the current day
-            dayDiv.classList.add("today");
-            dayDiv.addEventListener("click", () => openPrizeModal(year, month, day));
-        } 
-
-        calendarContainer.appendChild(dayDiv);
+      const dayDiv = document.createElement("div");
+      const day = dayIndex + 1;
+      const dayDate = new Date(year, month, day);
+      const isPast = dayDate < currentDate;
+      const isFuture = dayDate > currentDate;
+      const isToday = dayDate.toDateString() === currentDate.toDateString();
+  
+      dayDiv.textContent = day;
+      dayDiv.dataset.index = dayIndex;
+      dayDiv.classList.add("day");
+  
+      // Add specific classes based on the date
+      if (isPast) {
+       
+        dayDiv.classList.add("past");
+        dayDiv.textContent = "prizes ...";
+      } else if (isFuture) {
+        dayDiv.classList.add("future");
+        dayDiv.textContent = "?";
+      } else if (isToday) {
+        dayDiv.classList.add("today");
+        dayDiv.addEventListener("click", () => openPrizeModal(year, month, day));
+      }
+  
+      calendarContainer.appendChild(dayDiv);
     }
-
+  
     calendarWrapper.appendChild(calendarContainer);
     calendarWrapper.appendChild(closeButton);
     mapContainer.innerHTML = "";
     mapContainer.appendChild(calendarWrapper);
   };
+  
 
   // Open the prize modal
   const openPrizeModal = async (year, month, day) => {
