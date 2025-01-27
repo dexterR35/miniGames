@@ -11,7 +11,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Utility: Generate a date key for prizes
   const generateDateKey = (year, month, day) => `${year}-${month + 1}-${day}`;
-
+  const monthBackgrounds = {
+    0: "./png/png.webp",  // January
+    1: "path/to/february.jpg", // February
+    2: "path/to/march.jpg",    // March
+    // ...
+    11: "path/to/december.jpg" // December
+  };
+  
   // Simulate an asynchronous prize fetching function
   const fetchPrizes = async (baseDate, monthsAfter) => {
     return new Promise((resolve) => {
@@ -70,8 +77,20 @@ document.addEventListener("DOMContentLoaded", function () {
   const openCalendar = async (year, month) => {
     const calendarWrapper = document.createElement("div");
     calendarWrapper.classList.add("calendar-wrapper");
+  
+    // Div pentru imaginea lunii
+    const monthImageDiv = document.createElement("div");
+    monthImageDiv.classList.add("month-image");
+    const bgImage = monthBackgrounds[month];
+    const monthImage = document.createElement("img");
+    monthImage.src = bgImage;
+    monthImage.alt = `Background for ${new Date(year, month).toLocaleString('default', { month: 'long' })}`;
+    monthImageDiv.appendChild(monthImage);
+  
+    // Div pentru zilele lunii
     const calendarContainer = document.createElement("div");
     calendarContainer.classList.add("calendar");
+  
     const closeButton = document.createElement("button");
     closeButton.textContent = "Close map";
     closeButton.addEventListener("click", async () => {
@@ -97,14 +116,11 @@ document.addEventListener("DOMContentLoaded", function () {
       dayDiv.dataset.index = dayIndex;
       dayDiv.classList.add("day");
   
-      // Add specific classes based on the date
+      // Adaugă clase pentru stilizare în funcție de starea zilei
       if (isPast) {
-       
         dayDiv.classList.add("past");
-        dayDiv.textContent = "prizes ...";
       } else if (isFuture) {
         dayDiv.classList.add("future");
-        dayDiv.textContent = "?";
       } else if (isToday) {
         dayDiv.classList.add("today");
         dayDiv.addEventListener("click", () => openPrizeModal(year, month, day));
@@ -113,8 +129,9 @@ document.addEventListener("DOMContentLoaded", function () {
       calendarContainer.appendChild(dayDiv);
     }
   
-    calendarWrapper.appendChild(calendarContainer);
-    calendarWrapper.appendChild(closeButton);
+    calendarWrapper.appendChild(monthImageDiv); // Adaugă div-ul pentru imagine
+    calendarWrapper.appendChild(calendarContainer); // Adaugă div-ul pentru zile
+    calendarWrapper.appendChild(closeButton); // Adaugă butonul de închidere
     mapContainer.innerHTML = "";
     mapContainer.appendChild(calendarWrapper);
   };

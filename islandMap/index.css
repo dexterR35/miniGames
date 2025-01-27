@@ -1,225 +1,240 @@
 /* General Styling */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    /* height: 100vh; */
-    background-color: #e3f2fd;
-    height:100%;
-    overflow:hidden;
-    background: radial-gradient(ellipse at center, rgba(240,249,255,1) 0%,rgba(203,235,255,1) 25%,rgba(161,219,255,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=1 );
-    font-family: "Luckiest Guy", sans-serif;
-    letter-spacing:1px  
-  
-  }
-  
-  /* Map */
-  #map {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-  
-  .island {
-    width: 100px;
-    height: 100px;
-    background-color: #81d4fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
-  
-  .island:hover {
-    transform: scale(1.1);
-  }
-  
-  .island.disabled {
-    background-color: #e0e0e0;
-    cursor: not-allowed;
-  }
-  
-  /* Modal */
-  #prizeModal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: none;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
-  .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 300px;
-    text-align: center;
-    position: relative;
-  }
-  
-  #closeModal {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-size: 20px;
-  }
-  
-  /* Calendar */
-  #calendar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
-  }
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* height: 100vh; */
+  background-color: #e3f2fd;
+  height: 100%;
+  overflow-x: hidden;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(240, 249, 255, 1) 0%,
+    rgba(203, 235, 255, 1) 25%,
+    rgba(161, 219, 255, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=1 );
+  font-family: "Luckiest Guy", sans-serif;
+  letter-spacing: 1px;
+}
 
+/* Map */
+#map {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  justify-content: end;
+  background: red;
+  width: 100%;
+}
 
-  #calendar > div {
-    padding: 20px;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-  }
-  #calendar > div:not(#calendar > div.current,#calendar > div.before,#calendar > div.next) {
-    background: cornflowerblue;
-  }
-  #calendar > div.before {
-    background: gray;
-    color:white;
-  }
-  #calendar > div.next {
-    background: crimson;
-  }
-  
+.island {
+  width: 100px;
+  height: 100px;
+  background-color: #81d4fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
 
-  #calendar > .current {
-    background-color: #81c784;
-    color: white;
-  }
-  #map:has(#calendar) {
-    display: flex;
-    flex-direction: column;
+.island:hover {
+  transform: scale(1.1);
+}
 
-  }
-  #map:has(#calendar) button {
-    width: fit-content;
-    margin: 0 auto;
-    padding: 10px;
-  }
+.island.disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
 
-  button {
-    border: none;
-    border: 1px solid rgb(51, 51, 51);
-    border-radius: 10px;
-    outline: none;
-    color: white;
-    background: crimson;
-    padding: 15px;
-  }
+/* Modal */
+#prizeModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
 
-  .calendar-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    width: 100vw;
-    height: 100vw;
-    background: rgb(6, 124, 192);
-    
-  }
+.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+  position: relative;
+}
+
+#closeModal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Calendar */
+#calendar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+#calendar > div {
+  padding: 20px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#calendar
+  > div:not(
+    #calendar > div.current,
+    #calendar > div.before,
+    #calendar > div.next
+  ) {
+  background: cornflowerblue;
+}
+#calendar > div.before {
+  background: gray;
+  color: white;
+}
+#calendar > div.next {
+  background: crimson;
+}
+
+#calendar > .current {
+  background-color: #81c784;
+  color: white;
+}
+#map:has(#calendar) {
+  display: flex;
+  flex-direction: column;
+}
+#map:has(#calendar) button {
+  width: fit-content;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+button {
+  border: none;
+  border: 1px solid rgb(51, 51, 51);
+  border-radius: 10px;
+  outline: none;
+  color: white;
+  background: crimson;
+  padding: 15px;
+}
+
+.calendar-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+  background: rgb(6, 124, 192);
+}
 
 #map > div:not(.calendar-wrapper) {
-    background: green;
-    padding: 20px;
-    color: white;
-    cursor: pointer;
-    position: absolute
+  background: green;
+  padding: 20px;
+  color: white;
+  cursor: pointer;
+  position: absolute;
 }
 
 #map > div:not(.calendar-wrapper):nth-child(1) {
-    left: 20%;
-    top: 25%;
-    background: #a4d12ec9;
+  left: 20%;
+  top: 25%;
+  background: #a4d12ec9;
 }
 
 #map > div:not(.calendar-wrapper):nth-child(2) {
-    right: 32%;
-    top: 25%;
-    background:#aa2619;
+  right: 32%;
+  top: 25%;
+  background: #aa2619;
 }
 
 #map > div:not(.calendar-wrapper):nth-child(3) {
-    left: 30%;
-    bottom: 30%;
-    background: #eff8fcad;
-    color:black;
+  left: 30%;
+  bottom: 30%;
+  background: #eff8fcad;
+  color: black;
 }
 
 #map > div:not(.calendar-wrapper):nth-child(4) {
-    right: 20%;
-    bottom: 25%;
-    background: #e8981bc4;
+  right: 20%;
+  bottom: 25%;
+  background: #e8981bc4;
 }
 
 body {
   position: relative;
 }
 
-
 #map:has(#calendar) button {
   position: absolute;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   top: 10%;
 }
 
-
-
-body{
-  height:100vh;
-  overflow:hidden;
-  background: radial-gradient(ellipse at center, rgba(240,249,255,1) 0%,rgba(203,235,255,1) 25%,rgba(161,219,255,1) 100%);
-background: black;
-
+body {
+  /* height:100vh; */
+  /* overflow:hidden; */
+  background: radial-gradient(
+    ellipse at center,
+    rgba(240, 249, 255, 1) 0%,
+    rgba(203, 235, 255, 1) 25%,
+    rgba(161, 219, 255, 1) 100%
+  );
+  background: black;
 }
 
-
-body:not(#calendar){
-    background-size: contain;
-    background-image: url(./png/test.jpg);
-    background-repeat: no-repeat;
-    background-position: center;
+body:not(#calendar) {
+  background-size: contain;
+  background-image: url(./png/test.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100%;
 }
-
+body:has(#calendar) {
+height: 100% !important;
+}
 
 #map {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: end;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
-
+.calendar-wrapper {
+  grid-column: 2;
+  position: relative;
+}
 .month {
   padding: 10px 20px;
   border: 1px solid #ccc;
@@ -239,17 +254,22 @@ body:not(#calendar){
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  grid-column: 2;
 }
 
 .calendar {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows:auto;
   gap: 10px;
+  position: absolute;
+  place-content: space-evenly;
+height: 100%;
+  top: 0;
 }
 
 .day {
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -273,6 +293,14 @@ body:not(#calendar){
   background-color: purple;
   color: white;
   cursor: pointer;
+}
+
+.calendar .day {
+  position: relative;
+  top: 0;
+}
+[data-index="26"] {
+  left: 100%;
 }
 
 .day.future {
@@ -344,4 +372,20 @@ body:not(#calendar){
   border-width: 5px;
   border-style: solid;
   border-color: transparent rgba(0, 0, 0, 0.8) transparent transparent;
+}
+
+.island {
+  position: relative;
+  text-align: center;
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  /* overflow: hidden; */
+}
+
+.island-img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
 }
