@@ -28,31 +28,62 @@ body {
   gap: 20px;
   margin-bottom: 20px;
   justify-content: end;
-  background: red;
+  /* background: red; */
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+
+#map::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-image: url(./png/test.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100%;
+  z-index: -1;
 }
 
-.island {
-  width: 100px;
-  height: 100px;
-  background-color: #81d4fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
+
+#map > div {
+  background: green;
+  padding: 20px;
+  color: white;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  position: absolute;
 }
 
-.island:hover {
-  transform: scale(1.1);
+#map > div:nth-child(1) {
+  left: 20%;
+  top: 25%;
+  background: #a4d12ec9;
 }
 
-.island.disabled {
-  background-color: #e0e0e0;
-  cursor: not-allowed;
+#map > div:nth-child(2) {
+  right: 32%;
+  top: 25%;
+  background: #aa2619;
 }
 
+#map > div:nth-child(3) {
+  left: 30%;
+  bottom: 30%;
+  background: #eff8fcad;
+  color: black;
+}
+
+#map > div:nth-child(4) {
+  right: 20%;
+  bottom: 25%;
+  background: #e8981bc4;
+}
+/* end map */
 /* Modal */
 #prizeModal {
   position: fixed;
@@ -64,10 +95,7 @@ body {
   display: none;
   justify-content: center;
   align-items: center;
-}
-
-.hidden {
-  display: none;
+  z-index: 1000;
 }
 
 .modal-content {
@@ -87,7 +115,21 @@ body {
   font-size: 20px;
 }
 
+/* end modal */
+
 /* Calendar */
+
+.calendar-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+  background: rgb(6, 124, 192);
+}
+
 #calendar {
   display: flex;
   flex-wrap: wrap;
@@ -105,36 +147,11 @@ body {
   justify-content: center;
   align-items: center;
 }
-#calendar
-  > div:not(
-    #calendar > div.current,
-    #calendar > div.before,
-    #calendar > div.next
-  ) {
-  background: cornflowerblue;
-}
-#calendar > div.before {
-  background: gray;
-  color: white;
-}
-#calendar > div.next {
-  background: crimson;
-}
 
-#calendar > .current {
-  background-color: #81c784;
-  color: white;
-}
-#map:has(#calendar) {
-  display: flex;
-  flex-direction: column;
-}
-#map:has(#calendar) button {
-  width: fit-content;
-  margin: 0 auto;
-  padding: 10px;
-}
 
+
+
+/* button */
 button {
   border: none;
   border: 1px solid rgb(51, 51, 51);
@@ -145,116 +162,15 @@ button {
   padding: 15px;
 }
 
-.calendar-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  width: 100%;
-  height: 100%;
-  background: rgb(6, 124, 192);
-}
 
-#map > div:not(.calendar-wrapper) {
-  background: green;
-  padding: 20px;
-  color: white;
-  cursor: pointer;
-  position: absolute;
-}
 
-#map > div:not(.calendar-wrapper):nth-child(1) {
-  left: 20%;
-  top: 25%;
-  background: #a4d12ec9;
-}
-
-#map > div:not(.calendar-wrapper):nth-child(2) {
-  right: 32%;
-  top: 25%;
-  background: #aa2619;
-}
-
-#map > div:not(.calendar-wrapper):nth-child(3) {
-  left: 30%;
-  bottom: 30%;
-  background: #eff8fcad;
-  color: black;
-}
-
-#map > div:not(.calendar-wrapper):nth-child(4) {
-  right: 20%;
-  bottom: 25%;
-  background: #e8981bc4;
-}
-
-body {
-  position: relative;
-}
-
-#map:has(#calendar) button {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  top: 10%;
-}
-
-body {
-  /* height:100vh; */
-  /* overflow:hidden; */
-  background: radial-gradient(
-    ellipse at center,
-    rgba(240, 249, 255, 1) 0%,
-    rgba(203, 235, 255, 1) 25%,
-    rgba(161, 219, 255, 1) 100%
-  );
-  background: black;
-}
-
-body:not(#calendar) {
-  background-size: contain;
-  background-image: url(./png/test.jpg);
-  background-repeat: no-repeat;
-  background-position: center;
-  height: 100%;
-}
-body:has(#calendar) {
-height: 100% !important;
-}
-
-#map {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: end;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
 .calendar-wrapper {
   grid-column: 2;
   position: relative;
-}
-.month {
-  padding: 10px 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: center;
-  background-color: #f0f0f0;
-  transition: background-color 0.3s;
-}
-
-.month:hover {
-  background-color: #ddd;
-}
-
-.calendar-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  grid-column: 2;
 }
 
 .calendar {
@@ -282,6 +198,10 @@ height: 100%;
   justify-content: center;
   align-items: center;
   text-align: center;
+  position: relative;
+  top: 0;
+  padding: 10px;
+  text-align: center;
 }
 
 .day.past {
@@ -294,15 +214,6 @@ height: 100%;
   color: white;
   cursor: pointer;
 }
-
-.calendar .day {
-  position: relative;
-  top: 0;
-}
-[data-index="26"] {
-  left: 100%;
-}
-
 .day.future {
   background-color: gold;
   color: black;
@@ -311,6 +222,13 @@ height: 100%;
 .day.future:hover {
   background-color: orange;
 }
+
+
+[data-index="26"] {
+  left: 100%;
+}
+
+
 
 #prizeModal {
   display: none;
@@ -323,69 +241,5 @@ height: 100%;
   padding: 20px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
-.tooltip {
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  border-radius: 5px;
-  padding: 5px;
-  font-size: 12px;
-  visibility: hidden;
-  z-index: 10;
-}
 
-.day {
-  position: relative; /* This ensures the tooltip appears above the day */
-  padding: 10px;
-  text-align: center;
-}
 
-.future:hover .tooltip,
-.past:hover .tooltip,
-.today:hover .tooltip {
-  visibility: visible; /* Tooltip visibility on hover */
-}
-/* Styling for the tooltip window */
-.tooltip-window {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  width: 250px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  font-size: 14px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  display: none; /* Hidden by default */
-  z-index: 10;
-}
-
-/* Arrow for the tooltip window */
-.tooltip-window::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: 100%;
-  margin-top: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent rgba(0, 0, 0, 0.8) transparent transparent;
-}
-
-.island {
-  position: relative;
-  text-align: center;
-  padding: 10px;
-  margin: 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  /* overflow: hidden; */
-}
-
-.island-img {
-  width: 100%;
-  height: auto;
-  border-radius: 10px;
-}

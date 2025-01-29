@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mini Game Calendar</title>
-  <link rel="stylesheet" href="./index.css">
-</head>
-<body>
-  <div id="map"></div> <!-- The map will be generated here -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini Game Calendar</title>
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div id="map"></div>
 
-  <!-- Modal for Prize -->
-  <div id="prizeModal" class="hidden">
-    <div class="modal-content">
-      <span id="closeModal">&times;</span>
-      <h2>Congratulations!</h2>
-      <p id="prizeText"></p>
-      <button id="claimPrizeBtn">Claim Prize</button>
     </div>
-  </div>
- 
-
-  <!-- <canvas id="myCanvas" width="800" height="600"></canvas> -->
-  <script src="./index.js"></script>
-
-</body>
+    <!-- The map will be generated here -->
+   
+    <div id="loading"></div>
+    <!-- Modal for Prize -->
+    <div id="prizeModal" class="hidden">
+      <div class="modal-content">
+        <span id="closeModal">&times;</span>
+        <h2>Congratulations!</h2>
+        <p id="prizeText"></p>
+        <button id="claimPrizeBtn">Claim Prize</button>
+      </div>
+    </div>
+    <!-- <canvas id="myCanvas" width="800" height="600"></canvas> -->
+    <script src="./index.js"></script>
+  </body>
 </html>
