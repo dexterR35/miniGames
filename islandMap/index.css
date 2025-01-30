@@ -91,15 +91,16 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  display: none;
+  background: rgba(177, 175, 175, 0.664);
+  /* display: none; */
+  display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
 .modal-content {
-  background: white;
+background: white;
   padding: 20px;
   border-radius: 10px;
   width: 300px;
@@ -190,7 +191,7 @@ height: 100%;
   justify-content: center;
   align-items: center;
   border-radius: 30%;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
   background-color: #f0f0f0;
   transition: background-color 0.3s;
@@ -226,20 +227,6 @@ height: 100%;
 
 [data-index="26"] {
   left: 100%;
-}
-
-
-
-#prizeModal {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 20px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 

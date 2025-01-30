@@ -1,30 +1,31 @@
 document.addEventListener("DOMContentLoaded", function () {
-//config
-  const baseDate = new Date();
-  const monthsAfter = 2; // Show the current month and the next 2 months
-  const baseYear = baseDate.getFullYear();
-  const baseMonth = baseDate.getMonth();
-  const baseDay = baseDate.getDate();
-  let prizes = {};
+  const getCurrentDate = () => {
+    const currentDate = new Date();
+    return {
+      currentDate,
+      year: currentDate.getFullYear(),
+      month: currentDate.getMonth(),
+      day: currentDate.getDate(),
+    };
+  };
 
- 
+  const { currentDate, year: baseYear, month: baseMonth, day: baseDay } = getCurrentDate();
+  const monthsAfter = 2;
+  let prizes = {}; // This will hold the dynamically fetched prizes
+
   const mapContainer = document.getElementById("map");
-  const prizeModal = document.getElementById("prizeModal");
-  const closeModal = document.getElementById("closeModal");
-  const prizeText = document.getElementById("prizeText");
-  const claimPrizeBtn = document.getElementById("claimPrizeBtn");
+  let activeModal = null;
 
-  // Background images for each month
   const monthBackgrounds = {
     0: "./png/png.webp",
     1: "./png/png.webp",
     2: "./png/png.webp",
   };
 
-  // generate a date key for prizes
-  const generateDateKey = (day, month, year) => `${day}-${month + 1}-${year}`;
+  const getDateFromYearMonthDay = (year, month, day) => {
+    return new Date(year, month, day);
+  };
 
-  // Get month details dynamically, including number of days in the month
   const getMonthDetails = (offset) => {
     const targetMonth = (baseMonth + offset) % 12;
     const targetYear = baseYear + Math.floor((baseMonth + offset) / 12);
@@ -33,49 +34,29 @@ document.addEventListener("DOMContentLoaded", function () {
     return { targetMonth, targetYear, monthName, daysInMonth };
   };
 
-  // Fetch all prizes for the given period (current month + monthsAfter)
   const fetchPrizes = async () => {
-    const prizes = {};
-    for (let i = 0; i <= monthsAfter; i++) {
-      const { targetMonth, targetYear, monthName, daysInMonth } = getMonthDetails(i);
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateKey = generateDateKey(day, targetMonth, targetYear);
-        prizes[dateKey] = `Prize for ${day} ${monthName}`;
-      }
+    try {
+      const response = await fetch('./dynamic-prizes.json'); // Adjust path as necessary
+      if (!response.ok) throw new Error("Failed to fetch prizes, status code: " + response.status);
+      const data = await response.json();
+      console.log("Fetched prizes:", data); // Log the data to check
+      return data.prizes || {}; // Return only the prizes object or empty object
+    } catch (error) {
+      console.error("Error fetching prizes:", error);
+      alert("An error occurred while loading the prizes. Please try again later.");
+      return {}; // Return empty if an error occurs
     }
-    return prizes;
   };
 
-  // Initialize prize data
   const initializePrizes = async () => {
     try {
       prizes = await fetchPrizes();
+      console.log("Initialized prizes:", prizes); // Log the prizes object to check
     } catch (error) {
-      console.error("Error fetching prizes:", error);
+      console.error("Error initializing prizes:", error);
     }
   };
 
-  // Setup claim prize button action
-  const setupClaimPrizeBtn = () => {
-    claimPrizeBtn.addEventListener("click", claimPrize);
-  };
-
-  // Setup modal close button action
-  const setupCloseModalBtn = () => {
-    closeModal.addEventListener("click", () => {
-      prizeModal.style.display = "none";
-      prizeModal.parentNode.removeChild(prizeModal);
-    });
-  };
-
-  // Claim prize for today
-  const claimPrize = () => {
-    const dateKey = generateDateKey(baseDay, baseMonth, baseYear);
-    alert(`Prize Claimed for ${dateKey}!`);
-    prizeModal.style.display = "none";
-  };
-
-  // Render the map of months (islands)
   const generateMap = async () => {
     mapContainer.innerHTML = "";
     for (let i = 0; i <= monthsAfter; i++) {
@@ -85,63 +66,68 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  // Create months in the map
   const createIsland = (monthName, targetMonth, targetYear) => {
     const island = document.createElement("div");
     island.textContent = monthName;
     island.dataset.month = targetMonth;
     island.dataset.year = targetYear;
     island.classList.add(`m-${monthName.toLowerCase()}`);
-    island.addEventListener("click", () => openCalendar(targetMonth, targetYear));
+
+    if (targetYear < baseYear || (targetYear === baseYear && targetMonth < baseMonth)) {
+      island.classList.add("disabled");  // Add 'disabled' class for past months
+      island.style.pointerEvents = "none"; // Disable click for past months
+    } else if (targetYear === baseYear && targetMonth === baseMonth) {
+      island.classList.add("current");  // Add 'current' class for the current month
+      island.style.pointerEvents = "auto"; // Enable click for current month
+      island.addEventListener("click", () => openCalendar(targetMonth, targetYear));
+    } else {
+      island.classList.add("future");  // Add 'future' class for future months
+      island.style.pointerEvents = "none"; // Disable click for future months
+    }
+
     return island;
   };
 
-  // Open the calendar for the selected month
   const openCalendar = (targetMonth, targetYear) => {
     const calendarWrapper = createCalendarWrapper(targetMonth, targetYear);
-    const parentElement = mapContainer.parentNode;
-    parentElement.removeChild(mapContainer);
-    parentElement.appendChild(calendarWrapper);
+    mapContainer.replaceWith(calendarWrapper);
+    createFloatingPrizeDiv(targetMonth, targetYear);
   };
 
-  // Wrapper for the calendar, background image, and calendar grid
   const createCalendarWrapper = (targetMonth, targetYear) => {
     const calendarWrapper = document.createElement("div");
     calendarWrapper.classList.add("calendar-wrapper");
-    const monthImageDiv = createMonthImageDiv(targetMonth, targetYear);
+
+    const monthImageDiv = createMonthImageDiv(targetMonth);
     const calendarContainer = createCalendarContainer(targetMonth, targetYear);
-    const closeButton = closeBtn();
-    closeButton.addEventListener("click", async () => {
-      calendarWrapper.parentNode.removeChild(calendarWrapper);
-      await generateMap();
+    const closeButton = closeBtn(() => {
+      calendarWrapper.replaceWith(mapContainer);
     });
 
-    calendarWrapper.appendChild(monthImageDiv);
-    calendarWrapper.appendChild(calendarContainer);
-    calendarWrapper.appendChild(closeButton);
-
+    calendarWrapper.append(monthImageDiv, calendarContainer, closeButton);
     return calendarWrapper;
   };
 
-  // Background image for the month
-  const createMonthImageDiv = (targetMonth, targetYear) => {
+  const createMonthImageDiv = (targetMonth) => {
     const monthImageDiv = document.createElement("div");
     monthImageDiv.classList.add("month-image");
+
     const bgImage = monthBackgrounds[targetMonth] || monthBackgrounds[0];
     const monthImage = document.createElement("img");
     monthImage.src = bgImage;
     monthImage.alt = `Image for ${targetMonth}`;
-    monthImage.classList.add(`img-${targetMonth}`);
+
     monthImageDiv.appendChild(monthImage);
     return monthImageDiv;
   };
 
-  // Create the calendar container for the specific month
   const createCalendarContainer = (targetMonth, targetYear) => {
     const calendarContainer = document.createElement("div");
     calendarContainer.classList.add("calendar");
+
     const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
-    const currentDate = new Date(baseYear, baseMonth, baseDay);
+    const { currentDate } = getCurrentDate();
+
     for (let day = 1; day <= daysInMonth; day++) {
       const dayDiv = createDayDiv(day, targetMonth, targetYear, currentDate);
       calendarContainer.appendChild(dayDiv);
@@ -149,71 +135,141 @@ document.addEventListener("DOMContentLoaded", function () {
     return calendarContainer;
   };
 
-  // Create a day block for the calendar
   const createDayDiv = (day, targetMonth, targetYear, currentDate) => {
     const dayDiv = document.createElement("div");
-    const dayDate = new Date(targetYear, targetMonth, day);
-    const isPast = dayDate < currentDate;
-    const isFuture = dayDate > currentDate;
+    const dayDate = getDateFromYearMonthDay(targetYear, targetMonth, day);
     const isToday = dayDate.toDateString() === currentDate.toDateString();
-    dayDiv.textContent = day;
-    dayDiv.dataset.index = day;
+
+    const monthYearKey = `${targetYear}-${(targetMonth + 1).toString().padStart(2, '0')}`;
+    const prize = prizes[monthYearKey] && prizes[monthYearKey][day] 
+      ? prizes[monthYearKey][day] 
+      : null;  // Set prize to null if not found
+
+    dayDiv.textContent = prize || "No prize available";  // Show message if no prize
     dayDiv.classList.add("day");
 
-    if (isPast) {
-      dayDiv.classList.add("past");
-    } else if (isFuture) {
-      dayDiv.classList.add("future");
-    } else if (isToday) {
-      dayDiv.classList.add("today");
-      dayDiv.addEventListener("click", () => openPrizeModal(day, targetMonth, targetYear));
+    if (prize) {
+      if (isToday) {
+        dayDiv.classList.add("today");
+        dayDiv.addEventListener("click", () => openPrizeModal(day, targetMonth, targetYear, prize));
+      }
+    } else {
+      dayDiv.style.pointerEvents = "none";  // Disable clicks if no prize
     }
 
     return dayDiv;
   };
 
-  // Open the prize modal for the current day
-  const openPrizeModal = async (day, month, year) => {
-    const dateKey = generateDateKey(day, month, year);
-    try {
-      const prize = await getPrize(dateKey);
-      prizeText.textContent = prize;
-      prizeModal.style.display = "flex";
-    } catch (error) {
-      console.error("Error fetching prize:", error);
-      prizeText.textContent = "Something went wrong. Try again later.";
-      prizeModal.style.display = "flex";
-    }
-  };
+  const openPrizeModal = async (day, month, year, prize) => {
+    if (!prize) return; // If no prize, prevent modal from opening
 
-  // Get the prize for a given date
-  const getPrize = async (dateKey) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (prizes[dateKey]) {
-          resolve(prizes[dateKey]);
-        } else {
-          reject("Prize not found");
-        }
-      }, 300);
+    const monthYearKey = `${year}-${(month + 1).toString().padStart(2, '0')}`;
+    const modalContent = `
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>${prize}</p>
+        <button id="claimPrizeBtn">Claim Prize</button>
+      </div>
+    `;
+    const modal = createModal(modalContent);
+
+    modal.querySelector(".close").addEventListener("click", () => {
+      modal.remove();
+      activeModal = null;
+    });
+
+    modal.querySelector("#claimPrizeBtn").addEventListener("click", () => {
+      alert(`Prize Claimed for ${monthYearKey}!`);
+      modal.remove();
+      activeModal = null;
     });
   };
 
-  // Create the "Close map" button
-  const closeBtn = () => {
-    const closeButton = document.createElement("button");
-    closeButton.textContent = "Close map";
-    return closeButton;
+  const createModal = (content) => {
+    if (activeModal) {
+      activeModal.remove();
+      activeModal = null;
+    }
+
+    const modal = document.createElement("div");
+    modal.id = "prizeModal";
+    modal.classList.add("modal");
+    modal.innerHTML = content;
+    document.body.appendChild(modal);
+    activeModal = modal;
+    return modal;
   };
 
-  // Initialize the entire application
+  const closeBtn = (callback) => {
+    const button = document.createElement("button");
+    button.textContent = "Close map";
+    button.addEventListener("click", callback);
+    return button;
+  };
+
+  const createFloatingPrizeDiv = (targetMonth, targetYear) => {
+    const { currentDate } = getCurrentDate();
+    
+    // Get the previous, current, and next day's date objects
+    const prevDay = getDateFromYearMonthDay(targetYear, targetMonth, currentDate.getDate() - 1);
+    const nextDay = getDateFromYearMonthDay(targetYear, targetMonth, currentDate.getDate() + 1);
+  
+    // Format the date keys (month-year) for prize lookup
+    const formatDateKey = (date) => `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+    const prevDayKey = formatDateKey(prevDay);
+    const currentDayKey = formatDateKey(currentDate);
+    const nextDayKey = formatDateKey(nextDay);
+  
+    // Retrieve the prizes for each day
+    const prevPrize = prizes[prevDayKey] && prizes[prevDayKey][prevDay.getDate()] 
+      ? prizes[prevDayKey][prevDay.getDate()] 
+      : "Prize not found";  // Default prize text if not found
+  
+    const currentPrize = prizes[currentDayKey] && prizes[currentDayKey][currentDate.getDate()] 
+      ? prizes[currentDayKey][currentDate.getDate()] 
+      : "Prize not found";  // Default prize text if not found
+  
+    const nextPrize = prizes[nextDayKey] && prizes[nextDayKey][nextDay.getDate()] 
+      ? prizes[nextDayKey][nextDay.getDate()] 
+      : "Prize not found";  // Default prize text if not found
+  
+    // Create the floating div to display the prizes
+    const prizeDiv = document.createElement("div");
+    prizeDiv.classList.add("floating-prizes");
+  
+    // Set content for the floating div
+    prizeDiv.innerHTML = `
+      <p><strong>Previous Day's Prize:</strong> ${prevPrize}</p>
+      <p><strong>Today's Prize:</strong> ${currentPrize}</p>
+      <p><strong>Next Day's Prize:</strong> ${nextPrize}</p>
+    `;
+  
+    // Add styles for the floating div
+    prizeDiv.style.position = "fixed";
+    prizeDiv.style.top = "20px";
+    prizeDiv.style.right = "20px";
+    prizeDiv.style.padding = "15px";
+    prizeDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+    prizeDiv.style.color = "#fff";
+    prizeDiv.style.borderRadius = "8px";
+    prizeDiv.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.3)";
+    prizeDiv.style.zIndex = "9999";
+  
+    // Append the floating prize div to the document body
+    document.body.appendChild(prizeDiv);
+  
+    return prizeDiv;
+  };
+  
   const initializeApp = async () => {
-    await initializePrizes();
-    await generateMap();
-    setupClaimPrizeBtn();
-    setupCloseModalBtn();
+    try {
+      await initializePrizes();
+      await generateMap();
+    } catch (error) {
+      console.error("Error initializing app:", error);
+      alert("An error occurred while initializing the application. Please try again later.");
+    }
   };
 
-  // Start the app initialization
   initializeApp();
 });
