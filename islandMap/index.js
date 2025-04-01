@@ -28,7 +28,12 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const getDateFromYearMonthDay = (year, month, day) => {
-    return new Date(year, month, day);
+    const date = new Date(year, month, day);
+    // Validate the date is valid
+    if (date.getMonth() !== month || date.getFullYear() !== year) {
+        return null; // Invalid date
+    }
+    return date;
   };
 
   const getMonthDetails = (offset) => {
@@ -191,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const createDayDiv = (day, targetMonth, targetYear, currentDate) => {
     const dayDiv = document.createElement("div");
     const dayDate = getDateFromYearMonthDay(targetYear, targetMonth, day);
-    const isToday = dayDate.toDateString() === currentDate.toDateString();
+    const isToday = dayDate && dayDate.toDateString() === currentDate.toDateString();
 
     const monthYearKey = `${targetYear}-${(targetMonth + 1)
       .toString()
@@ -204,58 +209,83 @@ document.addEventListener("DOMContentLoaded", function () {
     dayDiv.textContent = prize || "No prize available"; // Show message if no prize
     dayDiv.classList.add("day");
 
-    if (prize) {
-      if (isToday) {
-        dayDiv.classList.add("today");
-        dayDiv.addEventListener("click", () =>
-          openPrizeModal(day, targetMonth, targetYear, prize)
-        );
-      }
+    if (prize && isToday) {
+      dayDiv.classList.add("today");
+      dayDiv.addEventListener("click", () =>
+        openPrizeModal(day, targetMonth, targetYear, prize)
+      );
     } else {
-      dayDiv.style.pointerEvents = "none"; // Disable clicks if no prize
+      dayDiv.style.pointerEvents = "none"; // Disable clicks if no prize or not today
     }
 
     return dayDiv;
   };
 
   const openPrizeModal = async (day, month, year, prize) => {
-    if (!prize) return; // If no prize, prevent modal from opening
+    console.log('Opening prize modal:', { day, month, year, prize }); // Debug log
+    
+    if (!prize) {
+      console.log('No prize provided, modal not opening'); // Debug log
+      return;
+    }
 
     const monthYearKey = `${year}-${(month + 1).toString().padStart(2, "0")}`;
-    const modalContent = `
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>${prize}</p>
-        <button id="claimPrizeBtn">Claim Prize</button>
-      </div>
-    `;
-    const modal = createModal(modalContent);
+    console.log('Month-Year Key:', monthYearKey); // Debug log
 
-    modal.querySelector(".close").addEventListener("click", () => {
-      modal.remove();
-      activeModal = null;
-    });
-
-    modal.querySelector("#claimPrizeBtn").addEventListener("click", () => {
-      alert(`Prize Claimed for ${monthYearKey}!`);
-      modal.remove();
-      activeModal = null;
-    });
-  };
-
-  const createModal = (content) => {
+    // Remove any existing modal first
     if (activeModal) {
+      console.log('Removing existing modal'); // Debug log
       activeModal.remove();
       activeModal = null;
     }
 
+    // Create and append the modal
     const modal = document.createElement("div");
     modal.id = "prizeModal";
     modal.classList.add("modal");
-    modal.innerHTML = content;
+    modal.style.display = "block"; // Ensure modal is visible
+    modal.innerHTML = `
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Today's Prize!</h2>
+        <p>${prize}</p>
+        <button id="claimPrizeBtn">Claim Prize</button>
+      </div>
+    `;
+
+    // Append modal to body
     document.body.appendChild(modal);
+    console.log('Modal added to DOM'); // Debug log
     activeModal = modal;
-    return modal;
+
+    // Add event listeners
+    const closeBtn = modal.querySelector(".close");
+    const claimBtn = modal.querySelector("#claimPrizeBtn");
+
+    closeBtn.addEventListener("click", () => {
+      console.log('Close button clicked'); // Debug log
+      modal.remove();
+      activeModal = null;
+    });
+
+    claimBtn.addEventListener("click", () => {
+      console.log('Claim button clicked'); // Debug log
+      alert(`Prize Claimed for ${monthYearKey}!`);
+      modal.remove();
+      activeModal = null;
+    });
+
+    // Close modal when clicking outside
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        console.log('Clicked outside modal'); // Debug log
+        modal.remove();
+        activeModal = null;
+      }
+    });
+
+    // Force a reflow to trigger the modal display
+    modal.offsetHeight;
   };
 
   const closeBtn = (callback) => {

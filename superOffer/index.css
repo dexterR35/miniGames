@@ -1,0 +1,188 @@
+/* Existing styles */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    background: #1a1a2e;
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-title {
+    color: white;
+    font-size: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.cards-container {
+    flex: 1;
+    width: 100%;
+    position: relative;
+}
+
+.cards-container canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.game-instructions {
+    color: rgba(255,255,255,0.8);
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.prize-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.modal-content h2 {
+    color: #1a1a2e;
+    margin-bottom: 0.5rem;
+}
+
+.modal-content p {
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.modal-content h3 {
+    color: #ff6b6b;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+}
+
+.cards-container {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 1200px;
+}
+
+.card {
+    width: 180px;
+    height: 250px;
+    position: relative;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+}
+
+.card:hover:not(.opened) {
+    transform: translateY(-10px);
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s ease;
+    transform-origin: left;
+}
+
+.card.opened .card-inner {
+    transform: rotateY(-105deg);
+}
+
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.card-front {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.card-back {
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+    color: white;
+    transform: rotateY(180deg);
+}
+
+.prize-content {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.prize-content h2 {
+    color: white;
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+}
+
+.prize-content p {
+    color: white;
+    font-size: 1.1rem;
+    margin: 1rem 0;
+    font-weight: bold;
+}
+
+.claim-btn {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.claim-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .cards-container {
+        gap: 1rem;
+    }
+    
+    .card {
+        width: 140px;
+        height: 200px;
+    }
+} 

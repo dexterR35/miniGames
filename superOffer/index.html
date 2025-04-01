@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Prize Cards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./index.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/8.6.6/pixi.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="game-title">Valentine's Prize Cards</h1>
+        <div class="cards-container"></div>
+        <p class="game-instructions">Choose a card to reveal your special Valentine's prize! 💝</p>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="prizeModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Congratulations!</h2>
+            <p id="prizeText"></p>
+            <button id="claimPrize">Claim Prize</button>
+        </div>
+    </div>
+
+    <!-- Audio elements -->
+    <!-- <audio id="cardFlip" src="./sounds/card-flip.mp3"></audio>
+    <audio id="success" src="./sounds/success.mp3"></audio> -->
+
+    <script src="./index.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            new ValentineGame();
+        });
+    </script>
+</body>
+</html> 
