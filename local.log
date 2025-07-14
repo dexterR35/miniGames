@@ -1,8 +1,0 @@
-
-
-(Not all processes could be identified, non-owned process info
- will not be shown, you would have to be root to see it all.)
-Thu Jan 30 2025 14:17:34:489 GMT+0200 (EET) -- [ERROR] Another instance of BrowserStack Binary is running with on your system with PID: 834846
-Thu Jan 30 2025 14:17:34:489 GMT+0200 (EET) -- [ERROR] Please close it and try again
-Thu Jan 30 2025 14:17:34:489 GMT+0200 (EET) -- [ERROR] SYS_CONFLICT:1001 https://browserstack.com/docs/local-testing/binary/errors/1001
-Thu Jan 30 2025 14:17:34:490 GMT+0200 (EET) -- You can learn more about BrowserStack Binary flags by running ./BrowserStackLocal --help
